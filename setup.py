@@ -41,7 +41,6 @@ setup(
 
     classifiers=[
         'Development Status :: 1 - Planning',
-        'Framework :: Ambrogio',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
