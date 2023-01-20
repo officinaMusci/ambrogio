@@ -2,12 +2,11 @@ import logging
 import sys
 import os
 import signal
-from functools import partial
 
 from rich.logging import RichHandler
-from rich.prompt import Prompt
 
 from ambrogio.procedures.loader import ProcedureLoader
+from ambrogio.cli.prompt import Prompt
 
 
 logger = logging.getLogger()
@@ -15,26 +14,32 @@ logger.addHandler(RichHandler(rich_tracebacks=True))
 logger.setLevel('DEBUG')
 
 
-def interrupt_handler(signum, frame, ask=True):
-    print('\n')
+def interrupt_handler():
+    '''
+    On KeyboardInterrupt, ask the user to confirm interrupting the program
+    '''
 
-    logger.warning(f'Handling signal {signum} ({signal.Signals(signum).name}).')
+    confirm = Prompt.confirm(
+        'Are you sure you want to interrupt the program?',
+        default=True
+    )
 
-    if ask:
-        signal.signal(signal.SIGINT, partial(interrupt_handler, ask=False))
-        logger.info('To confirm interrupt, press ctrl-c again.')
-        return
+    if confirm:
+        sys.exit(0)
 
-    sys.exit(0)
 
 
 def execute():
+    '''
+    Run Ambrogio via command line
+    '''
+
     signal.signal(signal.SIGINT, interrupt_handler)
     sys.path.append(os.getcwd())
     
     procedure_loader = ProcedureLoader()
 
-    procedure_name = Prompt.ask(
+    procedure_name = Prompt.list(
         'Choose a procedure to run',
         choices=procedure_loader.list()
     )

@@ -1,4 +1,5 @@
 setuptools
 psutil
+inquirer
 rich
 plotly
