@@ -37,8 +37,8 @@ class ProcedureLoader:
     runs procedures in a Ambrogio project.
     """
 
-    def __init__(self):
-        self.procedure_modules = ['procedures']
+    def __init__(self, conf: dict):
+        self.procedure_modules = conf['settings']['procedure_modules']
         self._procedures = {}
         self._load_all_procedures()
 

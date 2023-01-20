@@ -1,10 +1,10 @@
-import logging
 import sys
-import os
+import logging
 import signal
 
 from rich.logging import RichHandler
 
+from ambrogio.environment import init_env
 from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.cli.prompt import Prompt
 
@@ -28,16 +28,16 @@ def interrupt_handler():
         sys.exit(0)
 
 
-
 def execute():
     """
     Run Ambrogio via command line
     """
 
     signal.signal(signal.SIGINT, interrupt_handler)
-    sys.path.append(os.getcwd())
     
-    procedure_loader = ProcedureLoader()
+    conf = init_env()
+    
+    procedure_loader = ProcedureLoader(conf)
 
     procedure_name = Prompt.list(
         'Choose a procedure to run',
