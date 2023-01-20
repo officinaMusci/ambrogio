@@ -9,7 +9,7 @@ from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.cli.prompt import Prompt
 
 
-logger = logging.getLogger()
+logger = logging.getLogger('ambrogio')
 logger.addHandler(RichHandler(rich_tracebacks=True))
 logger.setLevel('DEBUG')
 
@@ -30,7 +30,7 @@ def interrupt_handler():
 
 def execute():
     """
-    Run Ambrogio via command line
+    Run Ambrogio via command-line tool
     """
 
     signal.signal(signal.SIGINT, interrupt_handler)
@@ -38,10 +38,18 @@ def execute():
     conf = init_env()
     
     procedure_loader = ProcedureLoader(conf)
+    procedure_list = procedure_loader.list()
 
-    procedure_name = Prompt.list(
-        'Choose a procedure to run',
-        choices=procedure_loader.list()
-    )
+    if len(procedure_list):
+        procedure_name = Prompt.list(
+            'Choose a procedure to run',
+            procedure_list
+        )
 
-    procedure_loader.run(procedure_name)
+        procedure_loader.run(procedure_name)
+
+    else:
+        logger.warning(
+            f"The {conf['settings']['procedure_module']}"
+            ' module doesn\'t contain any Procedure class'
+        )
