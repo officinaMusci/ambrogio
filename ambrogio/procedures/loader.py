@@ -38,7 +38,7 @@ class ProcedureLoader:
     """
 
     def __init__(self, conf: dict):
-        self.procedure_modules = conf['settings']['procedure_modules']
+        self.procedure_module = conf['settings']['procedure_module']
         self._procedures = {}
         self._load_all_procedures()
 
@@ -47,29 +47,12 @@ class ProcedureLoader:
             self._procedures[procedure.name] = procedure
 
     def _load_all_procedures(self):
-        for name in self.procedure_modules:
-            try:
-                for module in walk_modules(name):
-                    self._load_procedures(module)
-            
-            except ImportError:
-                raise
-
-    @staticmethod
-    def iter_procedure_classes(module):
-        """
-        Return an iterator over all procedure classes defined in the given
-        module that can be instantiated (i.e. which have name)
-        """
-
-        for obj in vars(module).values():
-            if (
-                inspect.isclass(obj)
-                and issubclass(obj, Procedure)
-                and obj.__module__ == module.__name__
-                and getattr(obj, 'name', None)
-            ):
-                yield obj
+        try:
+            for module in walk_modules(self.procedure_module):
+                self._load_procedures(module)
+        
+        except ImportError:
+            raise
     
     def list(self):
         """
@@ -106,3 +89,19 @@ class ProcedureLoader:
         
         procedure_process.start()
         procedure_process.join()
+
+    @staticmethod
+    def iter_procedure_classes(module):
+        """
+        Return an iterator over all procedure classes defined in the given
+        module that can be instantiated (i.e. which have name)
+        """
+
+        for obj in vars(module).values():
+            if (
+                inspect.isclass(obj)
+                and issubclass(obj, Procedure)
+                and obj.__module__ == module.__name__
+                and getattr(obj, 'name', None)
+            ):
+                yield obj
