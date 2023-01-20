@@ -1,6 +1,8 @@
 import sys
 import logging
 import signal
+from pathlib import Path
+import configparser
 
 from rich.logging import RichHandler
 
@@ -14,7 +16,7 @@ logger.addHandler(RichHandler(rich_tracebacks=True))
 logger.setLevel('DEBUG')
 
 
-def interrupt_handler():
+def _interrupt_handler():
     """
     On KeyboardInterrupt, ask the user to confirm interrupting the program
     """
@@ -28,28 +30,77 @@ def interrupt_handler():
         sys.exit(0)
 
 
-def execute():
+def _pop_command_name(argv):
+    i = 0
+    for arg in argv[1:]:
+        if not arg.startswith('-'):
+            del argv[i]
+            return arg
+        i += 1
+
+
+available_commands = {
+    'init': 'Create new project',
+    'start': 'Start the project'
+}
+
+
+def execute(argv=None, settings=None):
     """
     Run Ambrogio via command-line tool
     """
-
-    signal.signal(signal.SIGINT, interrupt_handler)
     
-    conf = init_env()
+    signal.signal(signal.SIGINT, _interrupt_handler)
+
+    if argv is None:
+        argv = sys.argv
+
+    command_name = _pop_command_name(argv)
+
+    # Create a new project
+    if command_name == 'init':
+        project_name = Prompt.text('Type the project name')
+        
+        project_path = (Path('./') / project_name)
+        project_path.mkdir()
+        
+        procedure_path = (project_path / 'procedures')
+        procedure_path.mkdir()
+
+        config = configparser.ConfigParser()
+        config['settings'] = {'procedure_module': 'procedures'}
+
+        with open('ambrogio.ini', 'x') as configfile:
+            config.write(configfile)
+
+    # Run a procedure
+    elif command_name == 'start':
+        config = init_env()
+            
+        procedure_loader = ProcedureLoader(config)
+        procedure_list = procedure_loader.list()
+
+        if len(procedure_list):
+            procedure_name = Prompt.list(
+                'Choose a procedure to run',
+                procedure_list
+            )
+
+            procedure_loader.run(procedure_name)
+
+        else:
+            print(
+                f"The {config['settings']['procedure_module']}"
+                ' module doesn\'t contain any Procedure class'
+            )
+
+    elif not command_name:
+        print("Usage:")
+        print("  ambrogio <command>\n")
+        print("Available commands:")
+        for name, description in sorted(available_commands):
+            print(f"  {name:<13} {description}")
     
-    procedure_loader = ProcedureLoader(conf)
-    procedure_list = procedure_loader.list()
-
-    if len(procedure_list):
-        procedure_name = Prompt.list(
-            'Choose a procedure to run',
-            procedure_list
-        )
-
-        procedure_loader.run(procedure_name)
-
     else:
-        logger.warning(
-            f"The {conf['settings']['procedure_module']}"
-            ' module doesn\'t contain any Procedure class'
-        )
+        print(f"Unknown command: {command_name}\n")
+        print('Use \"ambrogio\" to see available commands')
