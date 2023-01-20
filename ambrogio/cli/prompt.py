@@ -4,9 +4,9 @@ import inquirer
 
 
 class Prompt:
-    '''
+    """
     Prompt the user with interactive command line interfaces
-    '''
+    """
 
     @classmethod
     def confirm(cls, message: str, **kwargs) -> bool:

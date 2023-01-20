@@ -57,7 +57,8 @@ class ProcedureLoader:
 
     @staticmethod
     def iter_procedure_classes(module):
-        """Return an iterator over all procedure classes defined in the given
+        """
+        Return an iterator over all procedure classes defined in the given
         module that can be instantiated (i.e. which have name)
         """
 
