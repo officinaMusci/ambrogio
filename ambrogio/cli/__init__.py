@@ -61,16 +61,18 @@ def execute(argv=None, settings=None):
     if command_name == 'init':
         project_name = Prompt.text('Type the project name')
         
-        project_path = (Path('./') / project_name)
+        project_path = Path('./') / project_name
         project_path.mkdir()
         
-        procedure_path = (project_path / 'procedures')
+        procedure_path = project_path / 'procedures'
         procedure_path.mkdir()
 
         config = configparser.ConfigParser()
         config['settings'] = {'procedure_module': 'procedures'}
 
-        with open('ambrogio.ini', 'x') as configfile:
+        config_path = Path('./') / project_name / 'ambrogio.ini'
+
+        with open(config_path.resolve(), 'x') as configfile:
             config.write(configfile)
 
     # Run a procedure
@@ -98,7 +100,7 @@ def execute(argv=None, settings=None):
         print("Usage:")
         print("  ambrogio <command>\n")
         print("Available commands:")
-        for name, description in sorted(available_commands):
+        for name, description in available_commands.items():
             print(f"  {name:<13} {description}")
     
     else:
