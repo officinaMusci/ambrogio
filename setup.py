@@ -35,7 +35,7 @@ setup(
     install_requires=[
         'setuptools',
         'psutil',
-        'inquirer'
+        'inquirer',
         'rich',
         'plotly'
     ],
