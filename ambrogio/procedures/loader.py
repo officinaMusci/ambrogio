@@ -37,8 +37,8 @@ class ProcedureLoader:
     runs procedures in a Ambrogio project.
     """
 
-    def __init__(self, procedure_module: str):
-        self._procedure_module = procedure_module
+    def __init__(self, config: dict):
+        self.config = config
         self._procedures = {}
         self._load_all_procedures()
 
@@ -48,7 +48,7 @@ class ProcedureLoader:
 
     def _load_all_procedures(self):
         try:
-            for module in walk_modules(self._procedure_module):
+            for module in walk_modules(self.config['settings']['procedure_module']):
                 self._load_procedures(module)
         
         except ImportError:
@@ -80,7 +80,7 @@ class ProcedureLoader:
         """
 
         procedure = self.load(procedure_name)
-        procedure = procedure()
+        procedure = procedure(logging_level = self.config['settings']['logging_level'])
         
         procedure_process = Process(
             name=procedure.name,

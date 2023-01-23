@@ -56,9 +56,8 @@ def execute(argv = None):
     # Run a procedure
     elif command_name == 'start':
         config = init_env()
-        procedure_module = config['settings']['procedure_module']
             
-        procedure_loader = ProcedureLoader(procedure_module)
+        procedure_loader = ProcedureLoader(config)
         procedure_list = procedure_loader.list()
 
         if len(procedure_list):
@@ -71,7 +70,7 @@ def execute(argv = None):
 
         else:
             print(
-                f"The {procedure_module}"
+                f"The {config['settings']['procedure_module']}"
                 ' module doesn\'t contain any Procedure class'
             )
 
