@@ -36,7 +36,7 @@ def closest_ini(
 ini_path = closest_ini()
 
 
-def get_config() -> dict|None:
+def get_config() -> Optional[dict]:
     """
     Return the Ambrogio project configuration file content
     """
