@@ -21,9 +21,9 @@ class Procedure:
         if not getattr(self, 'name', None):
             raise ValueError(f"{type(self).__name__} must have a name")
 
-        logger = logging.getLogger(self.name)
-        logger.addHandler(RichHandler(rich_tracebacks=True))
-        logger.setLevel(logging_level)
+        self.logger = logging.getLogger(self.name)
+        self.logger.addHandler(RichHandler(rich_tracebacks=True))
+        self.logger.setLevel(logging_level)
 
         self._stats = {
             'cpu': [],
