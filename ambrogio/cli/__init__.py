@@ -1,17 +1,10 @@
 import sys
-import logging
 import signal
-
-from rich.logging import RichHandler
 
 from ambrogio.environment import init_env
 from ambrogio.utils.project import create_project
 from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.cli.prompt import Prompt
-
-
-logger = logging.getLogger()
-logger.addHandler(RichHandler(rich_tracebacks=True))
 
 
 def _interrupt_handler():
@@ -63,7 +56,6 @@ def execute(argv = None):
     # Run a procedure
     elif command_name == 'start':
         config = init_env()
-        logger.setLevel(config['settings']['DEBUG'])
             
         procedure_loader = ProcedureLoader()
         procedure_list = procedure_loader.list()
