@@ -5,7 +5,7 @@ import inquirer
 
 class Prompt:
     """
-    Prompt the user with interactive command line interfaces
+    Prompt the user with interactive command line interfaces.
     """
 
     @classmethod

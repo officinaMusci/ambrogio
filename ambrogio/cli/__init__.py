@@ -9,7 +9,7 @@ from ambrogio.cli.prompt import Prompt
 
 def _interrupt_handler():
     """
-    On KeyboardInterrupt, ask the user to confirm interrupting the program
+    On KeyboardInterrupt, ask the user to confirm interrupting the program.
     """
 
     confirm = Prompt.confirm(
@@ -38,7 +38,7 @@ available_commands = {
 
 def execute(argv = None):
     """
-    Run Ambrogio via command-line tool
+    Run Ambrogio via command-line tool.
     """
     
     signal.signal(signal.SIGINT, _interrupt_handler)
@@ -56,8 +56,9 @@ def execute(argv = None):
     # Run a procedure
     elif command_name == 'start':
         config = init_env()
+        procedure_module = config['settings']['procedure_module']
             
-        procedure_loader = ProcedureLoader()
+        procedure_loader = ProcedureLoader(procedure_module)
         procedure_list = procedure_loader.list()
 
         if len(procedure_list):
@@ -70,7 +71,7 @@ def execute(argv = None):
 
         else:
             print(
-                f"The {config['settings']['procedure_module']}"
+                f"The {procedure_module}"
                 ' module doesn\'t contain any Procedure class'
             )
 

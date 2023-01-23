@@ -3,7 +3,7 @@ import time
 
 class Timer:
     """
-    Hold and format elapsed time
+    Hold and format elapsed time.
     """
 
     beginning: float|None = None

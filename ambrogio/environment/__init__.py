@@ -8,18 +8,22 @@ import configparser
 from rich.logging import RichHandler
 
 
+logger = logging.getLogger()
+logger.addHandler(RichHandler(rich_tracebacks=True))
+
+
 class MissingConfigFile(IOError):
     'Missing file called ambrogio.ini'
     pass
 
 
-def closest_ini(
+def get_closest_ini(
         path: Union[str, os.PathLike] = '.',
         prev_path: Optional[Union[str, os.PathLike]] = None
     ) -> str:
     """
     Return the path to the closest ambrogio.ini file by traversing the current
-    directory and its parents
+    directory and its parents.
     """
     
     if prev_path is not None and str(path) == str(prev_path):
@@ -31,24 +35,7 @@ def closest_ini(
     if ini_path.exists():
         return str(ini_path)
     
-    return closest_ini(path.parent, path)
-
-ini_path = closest_ini()
-
-
-def get_config() -> Optional[dict]:
-    """
-    Return the Ambrogio project configuration file content
-    """
-
-    if ini_path:
-        config = configparser.ConfigParser()
-        config.read(ini_path)
-        return config
-    
-    return None
-
-config = get_config()
+    return get_closest_ini(path.parent, path)
 
 
 def init_env() -> dict:
@@ -58,19 +45,21 @@ def init_env() -> dict:
     Python path to be able to locate the project module.
     """
 
-    if config:
-        project_dir = str(Path(ini_path).parent)
+    ini_path = get_closest_ini()
 
-        if project_dir not in sys.path:
-            sys.path.append(project_dir)
+    if ini_path:
+        config = configparser.ConfigParser()
+        config.read(ini_path)
 
-        return config
+        if config:
+            project_dir = str(Path(ini_path).parent)
+
+            if project_dir not in sys.path:
+                sys.path.append(project_dir)
+
+            if config:
+                logger.setLevel(config['settings']['logging_level'])
+
+            return config
     
     raise MissingConfigFile
-
-
-logger = logging.getLogger()
-logger.addHandler(RichHandler(rich_tracebacks=True))
-
-if config:
-  logger.setLevel(config['settings']['logging_level'])
