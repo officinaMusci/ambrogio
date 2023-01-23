@@ -3,7 +3,6 @@ from importlib import import_module
 from pkgutil import iter_modules
 from multiprocessing import Process
 
-from ambrogio.environment import config
 from ambrogio.procedures import Procedure
 
 
