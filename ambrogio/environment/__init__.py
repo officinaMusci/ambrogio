@@ -5,7 +5,7 @@ from pathlib import Path
 import configparser
 
 
-class MissingIniFile(IOError):
+class MissingConfigFile(IOError):
     'Missing file called ambrogio.ini'
     pass
 
@@ -30,6 +30,23 @@ def closest_ini(
     
     return closest_ini(path.parent, path)
 
+ini_path = closest_ini()
+
+
+def get_config() -> dict|None:
+    """
+    Return the Ambrogio project configuration file content
+    """
+
+    if ini_path:
+        config = configparser.ConfigParser()
+        config.read(ini_path)
+        return config
+    
+    return None
+
+config = get_config()
+
 
 def init_env() -> dict:
     """
@@ -38,12 +55,7 @@ def init_env() -> dict:
     Python path to be able to locate the project module.
     """
 
-    config = configparser.ConfigParser()
-    ini_path = closest_ini()
-    
-    if ini_path:
-        config.read(ini_path)
-        
+    if config:
         project_dir = str(Path(ini_path).parent)
 
         if project_dir not in sys.path:
@@ -51,4 +63,4 @@ def init_env() -> dict:
 
         return config
     
-    raise MissingIniFile
+    raise MissingConfigFile

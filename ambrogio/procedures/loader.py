@@ -3,6 +3,7 @@ from importlib import import_module
 from pkgutil import iter_modules
 from multiprocessing import Process
 
+from ambrogio.environment import config
 from ambrogio.procedures import Procedure
 
 
@@ -37,8 +38,8 @@ class ProcedureLoader:
     runs procedures in a Ambrogio project.
     """
 
-    def __init__(self, conf: dict):
-        self.procedure_module = conf['settings']['procedure_module']
+    def __init__(self):
+        self.procedure_module = config['settings']['procedure_module']
         self._procedures = {}
         self._load_all_procedures()
 
