@@ -1,11 +1,9 @@
 import os
-import logging
 from threading import Thread 
 from time import sleep
 from datetime import datetime
 import psutil
 
-from rich.logging import RichHandler
 import plotly.graph_objects as go
 
 
@@ -17,13 +15,9 @@ class Procedure:
 
     name: str
 
-    def __init__(self, logging_level:str = 'DEBUG'):
+    def __init__(self):
         if not getattr(self, 'name', None):
             raise ValueError(f"{type(self).__name__} must have a name")
-
-        self.logger = logging.getLogger(self.name)
-        self.logger.addHandler(RichHandler(rich_tracebacks=True))
-        self.logger.setLevel(logging_level)
 
         self._stats = {
             'cpu': [],

@@ -80,7 +80,7 @@ class ProcedureLoader:
         """
 
         procedure = self.load(procedure_name)
-        procedure = procedure(logging_level = self.config['settings']['logging_level'])
+        procedure = procedure()
         
         procedure_process = Process(
             name=procedure.name,

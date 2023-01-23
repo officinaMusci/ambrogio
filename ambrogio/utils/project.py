@@ -15,8 +15,7 @@ def create_project(project_name: str, project_path: str = './'):
 
     config = configparser.ConfigParser()
     config['settings'] = {
-        'procedure_module': 'procedures',
-        'logging_level': 'INFO'
+        'procedure_module': 'procedures'
     }
 
     config_path = project_path / 'ambrogio.ini'

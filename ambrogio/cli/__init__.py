@@ -1,10 +1,22 @@
 import sys
 import signal
+import logging
 
 from ambrogio.environment import init_env
 from ambrogio.utils.project import create_project
 from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.cli.prompt import Prompt
+
+from rich.logging import RichHandler
+
+
+FORMAT = "%(message)s"
+logging.basicConfig(
+    level="NOTSET",
+    format=FORMAT,
+    datefmt="[%X]",
+    handlers=[RichHandler(rich_tracebacks=True)]
+)
 
 
 def _interrupt_handler():

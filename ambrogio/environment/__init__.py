@@ -1,15 +1,8 @@
 import os
 import sys
-import logging
 from typing import Union, Optional
 from pathlib import Path
 import configparser
-
-from rich.logging import RichHandler
-
-
-logger = logging.getLogger()
-logger.addHandler(RichHandler(rich_tracebacks=True))
 
 
 class MissingConfigFile(IOError):
@@ -56,9 +49,6 @@ def init_env() -> dict:
 
             if project_dir not in sys.path:
                 sys.path.append(project_dir)
-
-            if config:
-                logger.setLevel(config['settings']['logging_level'])
 
             return config
     
