@@ -17,7 +17,7 @@ def create_project(
     Create an Ambrogio project.
     """
 
-    if get_closest_ini():
+    if get_closest_ini(project_path):
         raise NestedProjectError
 
     project_path: Path = Path(project_path) / project_name
