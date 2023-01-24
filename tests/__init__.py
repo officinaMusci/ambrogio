@@ -19,8 +19,8 @@ class AmbrogioTestCase(unittest.TestCase):
       self.project_directory = tempfile.TemporaryDirectory()
       create_project('test_project', self.project_directory.name)
       
-      project_path = Path(self.project_directory.name) / 'test_project'
-      os.chdir(project_path.resolve())
+      self.project_path: Path = Path(self.project_directory.name) / 'test_project'
+      os.chdir(self.project_path.resolve())
 
       self.config = init_env()
       
