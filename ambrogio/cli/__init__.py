@@ -3,7 +3,7 @@ import signal
 import logging
 
 from ambrogio.environment import init_env
-from ambrogio.utils.project import create_project
+from ambrogio.utils.project import create_project, create_procedure
 from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.cli.prompt import Prompt
 
@@ -43,7 +43,8 @@ def _pop_command_name(argv):
 
 
 available_commands = {
-    'init': 'Create new project',
+    'init': 'Create a new project',
+    'create': 'Create a new procedure',
     'start': 'Start the project'
 }
 
@@ -64,6 +65,11 @@ def execute(argv = None):
     if command_name == 'init':
         project_name = Prompt.text('Type the project name')
         create_project(project_name)
+
+    # Create a new procedure
+    if command_name == 'create':
+        procedure_name = Prompt.text('Type the procedure name')
+        create_procedure(procedure_name)
 
     # Run a procedure
     elif command_name == 'start':
