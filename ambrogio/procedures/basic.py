@@ -1,5 +1,5 @@
 import os
-from threading import Thread 
+from threading import Thread
 from time import sleep
 from datetime import datetime
 import psutil
@@ -22,14 +22,14 @@ class BasicProcedure(Procedure):
             'memory': []
         }
 
-    def _monitor(self, main_thread:Thread):
+    def _monitor(self, execute_thread: Thread):
         """
         Keep track of the Process main thread performances
         """
 
         process = psutil.Process(os.getpid())
 
-        while process.is_running() and main_thread.is_alive():
+        while process.is_running() and execute_thread.is_alive():
             with process.oneshot():
                 now = datetime.now()
 
