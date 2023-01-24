@@ -8,7 +8,11 @@ from ambrogio import procedures
 from ambrogio.environment import get_closest_ini, NestedProjectError
 
 
-def create_project(project_name: str, project_path: Union[str, os.PathLike] = '.'):
+def create_project(
+        project_name: str,
+        project_path: Union[str, os.PathLike] = '.',
+        procedure_module_name: str = 'procedures'
+    ):
     """
     Create an Ambrogio project.
     """
@@ -21,7 +25,7 @@ def create_project(project_name: str, project_path: Union[str, os.PathLike] = '.
 
     config = configparser.ConfigParser()
     config['settings'] = {
-        'procedure_module': 'procedures'
+        'procedure_module': procedure_module_name
     }
 
     config_path: Path = project_path / 'ambrogio.ini'
@@ -30,7 +34,7 @@ def create_project(project_name: str, project_path: Union[str, os.PathLike] = '.
         config.write(config_file)
         config_file.close()
     
-    procedure_path: Path = project_path / 'procedures'
+    procedure_path: Path = project_path / procedure_module_name
     procedure_path.mkdir()
 
     procedure_init_path: Path = procedure_path / '__init__.py'
