@@ -42,7 +42,7 @@ class ProcedureLoader:
         self._procedures = {}
         self._load_all_procedures()
 
-    def _load_procedures(self, module):
+    def _load_procedures(self, module: str):
         for procedure in self.iter_procedure_classes(module):
             self._procedures[procedure.name] = procedure
 
@@ -61,7 +61,7 @@ class ProcedureLoader:
 
         return list(self._procedures.keys())
 
-    def load(self, procedure_name) -> Procedure:
+    def load(self, procedure_name: str) -> Procedure:
         """
         Return the Procedure class for the given procedure name.
         If the procedure name is not found, raise a KeyError.
@@ -73,7 +73,7 @@ class ProcedureLoader:
         except KeyError:
             raise KeyError(f"Procedure not found: {procedure_name}")
 
-    def run(self, procedure_name):
+    def run(self, procedure_name: str):
         """
         Run the Procedure execute method for the given procedure name.
         If the procedure name is not found, raise a KeyError.
