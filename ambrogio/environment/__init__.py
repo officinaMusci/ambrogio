@@ -5,8 +5,13 @@ from pathlib import Path
 import configparser
 
 
-class MissingConfigFile(IOError):
+class MissingConfigFileError(FileNotFoundError):
     'Missing file called ambrogio.ini'
+    pass
+
+
+class NestedProjectError(Exception):
+    'Can\'t create an Ambrogio project inside another one'
     pass
 
 
@@ -52,4 +57,4 @@ def init_env() -> dict:
 
             return config
     
-    raise MissingConfigFile
+    raise MissingConfigFileError

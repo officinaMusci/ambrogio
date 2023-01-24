@@ -1,10 +1,34 @@
 import unittest
 import os
-import tempfile
+from tempfile import TemporaryDirectory
 from pathlib import Path
 
 from ambrogio.utils.project import create_project
 from ambrogio.environment import init_env
+
+
+def create_test_project(
+        project_name: str = 'test_project',
+        test_path: Path | None = None
+    ):
+    prev_cwd = os.getcwd()
+
+    test_directory = None
+    if not test_path:
+        test_directory = TemporaryDirectory()
+        test_path = Path(test_directory.name)
+        os.chdir(test_path.resolve())
+
+    create_project(project_name, test_path)
+    
+    project_path: Path = test_path / project_name
+    os.chdir(project_path.resolve())
+
+    config = init_env()
+    
+    os.chdir(prev_cwd)
+
+    return test_directory, project_path, config
 
 
 class AmbrogioTestCase(unittest.TestCase):
@@ -14,17 +38,11 @@ class AmbrogioTestCase(unittest.TestCase):
   """
 
   def setUp(self):
-      prev_cwd = os.getcwd()
-
-      self.project_directory = tempfile.TemporaryDirectory()
-      create_project('test_project', self.project_directory.name)
-      
-      self.project_path: Path = Path(self.project_directory.name) / 'test_project'
-      os.chdir(self.project_path.resolve())
-
-      self.config = init_env()
-      
-      os.chdir(prev_cwd)
+      (
+          self.test_directory,
+          self.project_path,
+          self.config
+      ) = create_test_project()
   
   def tearDown(self):
-     self.project_directory.cleanup()
+      self.test_directory.cleanup()

@@ -5,12 +5,16 @@ import configparser
 import string
 
 from ambrogio import procedures
+from ambrogio.environment import get_closest_ini, NestedProjectError
 
 
 def create_project(project_name: str, project_path: Union[str, os.PathLike] = '.'):
     """
     Create an Ambrogio project.
     """
+
+    if get_closest_ini():
+        raise NestedProjectError
 
     project_path: Path = Path(project_path) / project_name
     project_path.mkdir()
