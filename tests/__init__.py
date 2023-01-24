@@ -1,5 +1,6 @@
 import unittest
 import os
+from typing import Optional
 from tempfile import TemporaryDirectory
 from pathlib import Path
 
@@ -9,7 +10,7 @@ from ambrogio.environment import init_env
 
 def create_test_project(
         project_name: str = 'test_project',
-        test_path: Path | None = None
+        test_path: Optional[Path] = None
     ):
     prev_cwd = os.getcwd()
 
