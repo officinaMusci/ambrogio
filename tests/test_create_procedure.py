@@ -21,3 +21,20 @@ class TestCreateProcedure(AmbrogioTestCase):
 
         procedures = procedure_loader.list()
         self.assertEqual(len(procedures), 1)
+
+        self.assertRaises(FileExistsError, lambda: create_procedure(
+            'Test procedure',
+            'basic',
+            self.project_path
+        ))
+
+        create_procedure(
+            'Test procedure 2',
+            'basic',
+            self.project_path
+        )
+
+        procedure_loader._load_all_procedures()
+
+        procedures = procedure_loader.list()
+        self.assertEqual(len(procedures), 2)
