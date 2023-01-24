@@ -1,3 +1,5 @@
+import unittest
+
 from ambrogio.environment import NestedProjectError
 
 from . import AmbrogioTestCase, create_test_project
@@ -13,3 +15,7 @@ class TestNestedProject(AmbrogioTestCase):
                 self.project_path
             )
         )
+
+
+if __name__ == '__main__':
+    unittest.main()

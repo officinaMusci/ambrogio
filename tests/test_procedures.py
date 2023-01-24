@@ -1,3 +1,5 @@
+import unittest
+
 from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.utils.project import create_procedure
 
@@ -42,3 +44,7 @@ class TestProcedure(AmbrogioTestCase):
 
         procedures = procedure_loader.list()
         self.assertEqual(len(procedures), 2)
+
+
+if __name__ == '__main__':
+    unittest.main()
