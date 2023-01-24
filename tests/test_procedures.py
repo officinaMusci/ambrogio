@@ -1,9 +1,10 @@
 from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.utils.project import create_procedure
+
 from . import AmbrogioTestCase
 
 
-class TestCreateProcedure(AmbrogioTestCase):
+class TestProcedure(AmbrogioTestCase):
     
     def test_create(self):
         procedure_loader = ProcedureLoader(self.config)
