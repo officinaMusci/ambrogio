@@ -50,10 +50,10 @@ def init_env() -> dict:
         config.read(ini_path)
 
         if config:
-            project_dir = str(Path(ini_path).parent)
+            project_path = str(Path(ini_path).parent)
 
-            if project_dir not in sys.path:
-                sys.path.append(project_dir)
+            if project_path not in sys.path:
+                sys.path.append(project_path)
 
             return config
     
