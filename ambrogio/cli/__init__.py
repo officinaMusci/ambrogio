@@ -8,6 +8,7 @@ from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.cli.prompt import Prompt
 
 from rich.logging import RichHandler
+from rich import traceback
 
 
 FORMAT = "%(message)s"
@@ -15,8 +16,10 @@ logging.basicConfig(
     level="NOTSET",
     format=FORMAT,
     datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True)]
+    handlers=[RichHandler(rich_tracebacks = True)]
 )
+
+traceback.install(show_locals = True)
 
 
 def _interrupt_handler():
