@@ -1,6 +1,5 @@
 import unittest
 
-from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.utils.project import create_procedure
 
 from . import AmbrogioTestCase
@@ -9,9 +8,7 @@ from . import AmbrogioTestCase
 class TestProcedure(AmbrogioTestCase):
     
     def test_create(self):
-        procedure_loader = ProcedureLoader(self.config)
-
-        procedures = procedure_loader.list()
+        procedures = self.procedure_loader.list()
         self.assertEqual(len(procedures), 0)
 
         create_procedure(
@@ -20,9 +17,9 @@ class TestProcedure(AmbrogioTestCase):
             self.project_path
         )
 
-        procedure_loader._load_all_procedures()
+        self.procedure_loader._load_all_procedures()
 
-        procedures = procedure_loader.list()
+        procedures = self.procedure_loader.list()
         self.assertEqual(len(procedures), 1)
 
         self.assertRaises(
@@ -40,10 +37,21 @@ class TestProcedure(AmbrogioTestCase):
             self.project_path
         )
 
-        procedure_loader._load_all_procedures()
+        self.procedure_loader._load_all_procedures()
 
-        procedures = procedure_loader.list()
+        procedures = self.procedure_loader.list()
         self.assertEqual(len(procedures), 2)
+
+    def test_basic(self):
+        create_procedure(
+            'Test procedure',
+            'basic',
+            self.project_path
+        )
+
+        self.procedure_loader._load_all_procedures()
+
+        self.procedure_loader.run('Test procedure')
 
 
 if __name__ == '__main__':

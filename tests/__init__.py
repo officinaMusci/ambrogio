@@ -1,5 +1,6 @@
 import unittest
 import os
+import sys
 from typing import Optional
 from tempfile import TemporaryDirectory
 from pathlib import Path
@@ -26,10 +27,13 @@ def create_test_project(
     os.chdir(project_path.resolve())
 
     config = init_env()
+
+    from ambrogio.procedures.loader import ProcedureLoader
+    procedure_loader = ProcedureLoader(config)
     
     os.chdir(prev_cwd)
 
-    return test_directory, project_path, config
+    return test_directory, project_path, config, procedure_loader
 
 
 class AmbrogioTestCase(unittest.TestCase):
@@ -42,8 +46,22 @@ class AmbrogioTestCase(unittest.TestCase):
       (
           self.test_directory,
           self.project_path,
-          self.config
+          self.config,
+          self.procedure_loader
       ) = create_test_project()
   
   def tearDown(self):
+      sys.path.remove(str(self.project_path.resolve()))
+
+      try:      
+          del sys.modules['procedures']
+      
+      except KeyError:
+          pass
+
       self.test_directory.cleanup()
+
+      del self.test_directory
+      del self.project_path
+      del self.config
+      del self.procedure_loader
