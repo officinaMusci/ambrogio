@@ -61,7 +61,7 @@ class ProcedureLoader:
 
         return list(self._procedures.keys())
 
-    def load(self, procedure_name: str) -> Procedure:
+    def load(self, procedure_name: str):
         """
         Return the Procedure class for the given procedure name.
         If the procedure name is not found, raise a KeyError.
@@ -79,7 +79,7 @@ class ProcedureLoader:
         If the procedure name is not found, raise a KeyError.
         """
 
-        procedure = self.load(procedure_name)
+        procedure: Procedure = self.load(procedure_name)()
         procedure._execute()
 
     @staticmethod
