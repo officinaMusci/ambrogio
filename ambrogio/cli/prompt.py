@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 import inquirer
 
@@ -9,27 +9,27 @@ class Prompt:
     """
 
     @classmethod
-    def confirm(cls, message: str, **kwargs) -> bool:
+    def confirm(cls, message: str, **kwargs) -> Optional[bool]:
         kwargs = {'message': message, **kwargs}
         return cls._convert_to_inquirer('confirm', **kwargs)
 
     @classmethod
-    def text(cls, message: str, **kwargs) -> str:
+    def text(cls, message: str, **kwargs) -> Optional[str]:
         kwargs = {'message': message, **kwargs}
         return cls._convert_to_inquirer('text', **kwargs)
 
     @classmethod
-    def editor(cls, message: str, **kwargs) -> str:
+    def editor(cls, message: str, **kwargs) -> Optional[str]:
         kwargs = {'message': message, **kwargs}
         return cls._convert_to_inquirer('editor', **kwargs)
 
     @classmethod
-    def path(cls, message: str, **kwargs) -> str:
+    def path(cls, message: str, **kwargs) -> Optional[str]:
         kwargs = {'message': message, **kwargs}
         return cls._convert_to_inquirer('path', **kwargs)
 
     @classmethod
-    def password(cls, message: str, **kwargs) -> str:
+    def password(cls, message: str, **kwargs) -> Optional[str]:
         kwargs = {'message': message, **kwargs}
         return cls._convert_to_inquirer('password', **kwargs)
 
@@ -49,4 +49,6 @@ class Prompt:
             getattr(inquirer, method.capitalize())('answer', **kwargs)
         ]
 
-        return inquirer.prompt(questions)['answer']
+        result = inquirer.prompt(questions)
+
+        return result['answer'] if result else None

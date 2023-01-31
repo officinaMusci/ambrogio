@@ -2,7 +2,7 @@ import os
 import sys
 from typing import Union, Optional
 from pathlib import Path
-import configparser
+from configparser import ConfigParser
 
 
 class MissingConfigFileError(FileNotFoundError):
@@ -36,7 +36,7 @@ def get_closest_ini(
     return get_closest_ini(path.parent, path)
 
 
-def init_env() -> dict:
+def init_env() -> ConfigParser:
     """
     Initialize environment to use command-line tool from inside a project
     dir. This returns the Ambrogio project configuration and modifies the
@@ -46,7 +46,7 @@ def init_env() -> dict:
     ini_path = get_closest_ini()
 
     if ini_path:
-        config = configparser.ConfigParser()
+        config = ConfigParser()
         config.read(ini_path)
 
         if config:

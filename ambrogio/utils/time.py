@@ -6,8 +6,8 @@ class Timer:
     Hold and format elapsed time.
     """
 
-    beginning: float|None = None
-    end: float|None = None
+    beginning: float = 0
+    end: float = 0
 
     def __init__(self, start: bool = True) -> None:
         if start:
