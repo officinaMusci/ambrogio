@@ -1,6 +1,7 @@
 import sys
 import signal
 import logging
+import threading
 
 from ambrogio.environment import init_env
 from ambrogio.utils.project import create_project, create_procedure
@@ -22,7 +23,9 @@ logging.basicConfig(
 traceback.install(show_locals = True)
 
 
-def _interrupt_handler():
+exit_event = threading.Event()
+
+def _interrupt_handler(*args):
     """
     On KeyboardInterrupt, ask the user to confirm interrupting the program.
     """
@@ -33,6 +36,7 @@ def _interrupt_handler():
     )
 
     if confirm:
+        exit_event.set()
         sys.exit(0)
 
 
@@ -67,12 +71,14 @@ def execute(argv = None):
     # Create a new project
     if command_name == 'init':
         project_name = Prompt.text('Type the project name')
-        create_project(project_name)
+        if project_name:
+            create_project(project_name)
 
     # Create a new procedure
     if command_name == 'create':
         procedure_name = Prompt.text('Type the procedure name')
-        create_procedure(procedure_name)
+        if procedure_name:
+            create_procedure(procedure_name)
 
     # Run a procedure
     elif command_name == 'start':
