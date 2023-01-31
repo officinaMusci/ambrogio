@@ -80,15 +80,7 @@ class ProcedureLoader:
         """
 
         procedure = self.load(procedure_name)
-        procedure = procedure()
-        
-        procedure_process = Process(
-            name=procedure.name,
-            target=procedure._execute
-        )
-        
-        procedure_process.start()
-        procedure_process.join()
+        procedure._execute()
 
     @staticmethod
     def iter_procedure_classes(module):
