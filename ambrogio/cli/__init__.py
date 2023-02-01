@@ -1,12 +1,11 @@
 import sys
 import signal
 import logging
-import threading
 
-from ambrogio.environment import init_env
-from ambrogio.utils.project import create_project, create_procedure
-from ambrogio.procedures.loader import ProcedureLoader
+from ambrogio.cli.start import start
 from ambrogio.cli.prompt import Prompt
+from ambrogio.utils.project import create_project, create_procedure
+from ambrogio.utils.threading import exit_event
 
 from rich.logging import RichHandler
 from rich import traceback
@@ -22,8 +21,6 @@ logging.basicConfig(
 
 traceback.install(show_locals = True)
 
-
-exit_event = threading.Event()
 
 def _interrupt_handler(*args):
     """
@@ -80,26 +77,9 @@ def execute(argv = None):
         if procedure_name:
             create_procedure(procedure_name)
 
-    # Run a procedure
+    # Start the project
     elif command_name == 'start':
-        config = init_env()
-            
-        procedure_loader = ProcedureLoader(config)
-        procedure_list = procedure_loader.list()
-
-        if len(procedure_list):
-            procedure_name = Prompt.list(
-                'Choose a procedure to run',
-                procedure_list
-            )
-
-            procedure_loader.run(procedure_name)
-
-        else:
-            print(
-                f"The {config['settings']['procedure_module']}"
-                ' module doesn\'t contain any Procedure class'
-            )
+        start()
 
     elif not command_name:
         print("Usage:")

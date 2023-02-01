@@ -2,6 +2,8 @@ from typing import Any, Optional
 
 import inquirer
 
+from ambrogio.utils.threading import pause_event
+
 
 class Prompt:
     """
@@ -45,10 +47,18 @@ class Prompt:
 
     @staticmethod
     def _convert_to_inquirer(method:str, **kwargs):
+        """
+        Convert the method name to the corresponding inquirer method.
+        """
+
+        pause_event.set()
+
         questions = [
             getattr(inquirer, method.capitalize())('answer', **kwargs)
         ]
 
         result = inquirer.prompt(questions)
+
+        pause_event.clear()
 
         return result['answer'] if result else None
