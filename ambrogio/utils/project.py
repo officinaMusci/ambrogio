@@ -1,7 +1,7 @@
 import os
 from typing import Union
 from pathlib import Path
-import configparser
+from configparser import ConfigParser
 import string
 
 from ambrogio import procedures
@@ -10,20 +10,20 @@ from ambrogio.environment import get_closest_ini, NestedProjectError
 
 def create_project(
         project_name: str,
-        project_path: Union[str, os.PathLike] = '.',
+        dest_directory_path: Union[str, os.PathLike] = '.',
         procedure_module_name: str = 'procedures'
     ):
     """
     Create an Ambrogio project.
     """
 
-    if get_closest_ini(project_path):
+    if get_closest_ini(dest_directory_path):
         raise NestedProjectError
 
-    project_path: Path = Path(project_path) / project_name
+    project_path: Path = Path(dest_directory_path) / project_name
     project_path.mkdir()
 
-    config = configparser.ConfigParser()
+    config = ConfigParser()
     config['settings'] = {
         'procedure_module': procedure_module_name
     }

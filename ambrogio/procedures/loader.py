@@ -1,7 +1,7 @@
 import inspect
 from importlib import import_module
 from pkgutil import iter_modules
-from multiprocessing import Process
+from configparser import ConfigParser
 
 from ambrogio.procedures import Procedure
 
@@ -37,7 +37,7 @@ class ProcedureLoader:
     runs procedures in a Ambrogio project.
     """
 
-    def __init__(self, config: dict):
+    def __init__(self, config: ConfigParser):
         self.config = config
         self._procedures = {}
         self._load_all_procedures()
