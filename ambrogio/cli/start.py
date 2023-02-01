@@ -1,18 +1,16 @@
 import os
 import psutil
 from threading import Thread
-from inspect import getsource
 from time import sleep
 
 from rich.table import Table
 from rich.layout import Layout
 from rich.panel import Panel
-from rich.progress_bar import ProgressBar
-from rich.syntax import Syntax
 from rich.live import Live
 
 from ambrogio.cli.prompt import Prompt
 from ambrogio.environment import init_env
+from ambrogio.procedures import Procedure
 from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.utils.threading import check_events, exit_event
 from ambrogio.utils.memory import format_bytes
@@ -62,9 +60,17 @@ def start():
         )
 
 
-def show_dashboard(procedure):
+def show_dashboard(procedure: Procedure):
     process = psutil.Process(os.getpid())
     timer = Timer()
+
+    def get_performances():
+        return {
+            'elapsed_time': timer.elapsed_time,
+            'memory': process.memory_info().rss,
+            'cpu': process.cpu_percent(),
+            'threads': process.num_threads()
+        }
 
     def generate_dashboard():
         performance_table = Table(
@@ -78,11 +84,31 @@ def show_dashboard(procedure):
         performance_table.add_column('CPU', justify='right', min_width=10)
         performance_table.add_column('Threads', justify='right')
 
+        performances = get_performances()
+
+        max_memory, max_cpu, max_threads = 0, 0, 0
+        for key, value in performances.items():
+            if key == 'memory' and value > max_memory:
+                max_memory = value
+            elif key == 'cpu' and value > max_cpu:
+                max_cpu = value
+            elif key == 'threads' and value > max_threads:
+                max_threads = value
+
+
         performance_table.add_row(
-            timer.elapsed_time,
-            format_bytes(process.memory_info().rss),
-            f"{process.cpu_percent():.2f} %",
-            f"{process.num_threads()}"
+            performances['elapsed_time'],
+            format_bytes(performances['memory']),
+            f"{performances['cpu']:.2f} %",
+            f"{performances['threads']}",
+            end_section=True
+        )
+
+        performance_table.add_row(
+            'Max',
+            format_bytes(max_memory),
+            f"{max_cpu:.2f} %",
+            f"{max_threads}"
         )
 
         layout = Layout(name='root')
@@ -105,39 +131,14 @@ def show_dashboard(procedure):
         )
         
         layout['procedure_status'].split_column(
-            Layout(name='performances', size=7),
-            Layout(name='progress', size=3),
-            Layout(name='current_step_function', ratio=1)
+            Layout(name='performances', size=9),
+            *procedure._additional_layouts
         )
         
         layout['procedure_status']['performances'].update(
             Panel(
                 performance_table,
                 title='Performances'
-            )
-        )
-
-        layout['procedure_status']['progress'].update(
-            Panel(
-                ProgressBar(
-                    total=procedure.total_steps,
-                    completed=procedure.completed_steps,
-                    finished_style='green'
-                ),
-                title="Progress"
-            )
-        )
-
-        layout['procedure_status']['current_step_function'].update(
-            Panel(
-                Syntax(
-                    getsource(procedure.current_step['function'])
-                        if procedure.current_step
-                        else '',
-                    'python',
-                    line_numbers=True
-                ),
-                title='Current step function'
             )
         )
 

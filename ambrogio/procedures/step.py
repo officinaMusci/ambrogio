@@ -1,5 +1,11 @@
 from typing import List, Optional, Callable
 from threading import Thread
+from inspect import getsource
+
+from rich.layout import Layout
+from rich.panel import Panel
+from rich.progress_bar import ProgressBar
+from rich.syntax import Syntax
 
 from ambrogio.procedures import Procedure
 from ambrogio.utils.threading import exit_event
@@ -163,3 +169,41 @@ class StepProcedure(Procedure):
         for step in self._parallel_steps:
             if step.is_alive():
                 step.join()
+
+    @property
+    def _additional_layouts(self) -> List[Layout]:
+        """
+        Additional layouts to be added to Ambrogio dashboard.
+        """
+
+        progress = Layout(name='progress', size=3)
+        current_step_function = Layout(name='current_step_function', ratio=1)
+
+        progress.update(
+            Panel(
+                ProgressBar(
+                    total=self.total_steps,
+                    completed=self.completed_steps,
+                    finished_style='green'
+                ),
+                title="Progress"
+            )
+        )
+
+        current_step_function.update(
+            Panel(
+                Syntax(
+                    getsource(self.current_step['function'])
+                        if self.current_step
+                        else '',
+                    'python',
+                    line_numbers=True
+                ),
+                title='Current step function'
+            )
+        )
+        
+        return [
+            progress,
+            current_step_function
+        ]

@@ -1,3 +1,7 @@
+from typing import List
+
+from rich.layout import Layout
+
 from ambrogio.procedures import Procedure
 
 
@@ -22,3 +26,11 @@ class BasicProcedure(Procedure):
         raise NotImplementedError(
             f'{self.__class__.__name__}.execute callback is not defined'
         )
+
+    @property
+    def _additional_layouts(self) -> List[Layout]:
+        """
+        Additional layouts to be added to Ambrogio dashboard.
+        """
+
+        return []
