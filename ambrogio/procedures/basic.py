@@ -11,10 +11,12 @@ class BasicProcedure(Procedure):
 
     def _execute(self):
         """
-        Run the Process main thread
+        Execute the procedure.
         """
 
-        return self.execute()
+        self.execute()
+
+        self._finished = True
 
     def execute(self):
         raise NotImplementedError(
