@@ -10,7 +10,7 @@ def walk_modules(path):
     """
     Loads a module and all its submodules from the given module path and
     returns them. If *any* module throws an exception while importing, that
-    exception is thrown back.
+    module is skipped.
     """
 
     mods = []
@@ -25,8 +25,12 @@ def walk_modules(path):
                 mods += walk_modules(fullpath)
 
             else:
-                submod = import_module(fullpath)
-                mods.append(submod)
+                try:
+                    submod = import_module(fullpath)
+                    mods.append(submod)
+                    
+                except ImportError or ModuleNotFoundError:
+                    continue
     
     return mods
 
@@ -47,12 +51,8 @@ class ProcedureLoader:
             self._procedures[procedure.name] = procedure
 
     def _load_all_procedures(self):
-        try:
-            for module in walk_modules(self.config['settings']['procedure_module']):
-                self._load_procedures(module)
-        
-        except ImportError:
-            raise
+        for module in walk_modules(self.config['settings']['procedure_module']):
+            self._load_procedures(module)
     
     def list(self):
         """
