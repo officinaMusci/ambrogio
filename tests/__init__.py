@@ -37,31 +37,32 @@ def create_test_project(
 
 
 class AmbrogioTestCase(unittest.TestCase):
-  """
-  Ambrogio specific test case. It creates an Ambrogio project
-  in a temporary directory and activates it.
-  """
+    """
+    Ambrogio specific test case. It creates an Ambrogio project
+    in a temporary directory and activates it.
+    """
 
-  def setUp(self):
-      (
-          self.test_directory,
-          self.project_path,
-          self.config,
-          self.procedure_loader
-      ) = create_test_project()
-  
-  def tearDown(self):
-      sys.path.remove(str(self.project_path.resolve()))
+    def setUp(self):
+        (
+            self.test_directory,
+            self.project_path,
+            self.config,
+            self.procedure_loader
+        ) = create_test_project()
+    
+    def tearDown(self):
+        try:      
+            del sys.modules['procedures']
+        
+        except KeyError:
+            pass
 
-      try:      
-          del sys.modules['procedures']
-      
-      except KeyError:
-          pass
+        if self.test_directory:
+            self.test_directory.cleanup()
 
-      self.test_directory.cleanup()
+        sys.path.remove(str(self.project_path.resolve()))
 
-      del self.test_directory
-      del self.project_path
-      del self.config
-      del self.procedure_loader
+        del self.test_directory
+        del self.project_path
+        del self.config
+        del self.procedure_loader
