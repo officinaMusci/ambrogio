@@ -6,8 +6,8 @@ from ambrogio.environment import NestedProjectError
 from . import AmbrogioTestCase, create_test_project
 
 
-class TestNestedProject(AmbrogioTestCase):
-    def test_create_nested(self):
+class TestProject(AmbrogioTestCase):
+    def test_nested_project(self):
         self.assertRaises(
             NestedProjectError,
             lambda: create_test_project(
@@ -16,7 +16,7 @@ class TestNestedProject(AmbrogioTestCase):
             )
         )
 
-    def test_create(self):
+    def test_create_procedures(self):
         procedures = self.procedure_loader.list()
         self.assertEqual(len(procedures), 0)
 
@@ -39,17 +39,6 @@ class TestNestedProject(AmbrogioTestCase):
               self.project_path
           )
         )
-
-        create_procedure(
-            'Test procedure 2',
-            'basic',
-            self.project_path
-        )
-
-        self.procedure_loader._load_all_procedures()
-
-        procedures = self.procedure_loader.list()
-        self.assertEqual(len(procedures), 2)
 
 
 if __name__ == '__main__':

@@ -51,7 +51,7 @@ class AmbrogioTestCase(unittest.TestCase):
         ) = create_test_project()
     
     def tearDown(self):
-        try:      
+        try:
             del sys.modules['procedures']
         
         except KeyError:
