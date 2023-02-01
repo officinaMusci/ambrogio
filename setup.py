@@ -7,7 +7,7 @@ long_description = (project_directory / "README.md").read_text()
 
 setup(
     name='ambrogio',
-    version='0.3.5',
+    version='0.3.6',
 
     description='A simple framework to handle complex scripts.',
     long_description=long_description,
@@ -24,7 +24,7 @@ setup(
     
     license='BSD 3-Clause',
     
-    python_requires='>=3.8',
+    python_requires='>=3.7',
     entry_points={
         'console_scripts': ['ambrogio = ambrogio.cli:execute']
     },
@@ -45,6 +45,7 @@ setup(
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
