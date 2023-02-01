@@ -44,14 +44,25 @@ class TestProcedure(AmbrogioTestCase):
 
     def test_basic(self):
         create_procedure(
-            'Test procedure',
+            'Basic procedure',
             'basic',
             self.project_path
         )
 
         self.procedure_loader._load_all_procedures()
 
-        self.procedure_loader.run('Test procedure')
+        self.procedure_loader.run('Basic procedure')
+
+    def test_step(self):
+        create_procedure(
+            'Step procedure',
+            'step',
+            self.project_path
+        )
+
+        self.procedure_loader._load_all_procedures()
+
+        self.procedure_loader.run('Step procedure')
 
 
 if __name__ == '__main__':

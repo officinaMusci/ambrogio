@@ -1,0 +1,23 @@
+from ambrogio.procedures.step import StepProcedure
+
+
+class $classname(StepProcedure):
+    name = '$name'
+
+    def first_step(self):
+        pass
+
+    def second_step(self):
+        pass
+
+    def third_step(self):
+        pass
+
+    def forth_step(self):
+        pass
+
+    def setUp(self):
+        self.add_step(self.first_step)
+        self.add_step(self.second_step, parallel=True)
+        self.add_step(self.third_step, parallel=True)
+        self.add_step(self.forth_step)
