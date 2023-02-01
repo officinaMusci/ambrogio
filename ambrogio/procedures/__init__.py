@@ -6,6 +6,8 @@ class Procedure:
 
     name: str
 
+    _finished: bool = False
+
     def __init__(self):
         if not getattr(self, 'name', None):
             raise ValueError(f"{type(self).__name__} must have a name")
@@ -14,3 +16,11 @@ class Procedure:
         raise NotImplementedError(
             f'{self.__class__.__name__}._execute callback is not defined'
         )
+
+    @property
+    def finished(self) -> bool:
+        """
+        Whether the procedure has finished.
+        """
+
+        return self._finished
