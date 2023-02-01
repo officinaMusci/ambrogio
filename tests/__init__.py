@@ -51,14 +51,8 @@ class AmbrogioTestCase(unittest.TestCase):
         ) = create_test_project()
     
     def tearDown(self):
-        try:
-            modules_to_delete = [
-                module for module in sys.modules
-                if 'procedures' in module
-            ]
-            
-            for module in modules_to_delete:
-                del sys.modules[module]
+        try:      
+            del sys.modules['procedures']
         
         except KeyError:
             pass
