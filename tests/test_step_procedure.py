@@ -6,7 +6,15 @@ from . import AmbrogioTestCase
 
 
 class TestStepProcedure(AmbrogioTestCase):
+    """
+    Test the step procedure.
+    """
+
     def test_step_procedure(self):
+        """
+        Test the step procedure.
+        """
+        
         create_procedure(
             'Step procedure',
             'step',

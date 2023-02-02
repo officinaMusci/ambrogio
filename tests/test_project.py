@@ -7,7 +7,15 @@ from . import AmbrogioTestCase, create_test_project
 
 
 class TestProject(AmbrogioTestCase):
+    """
+    Test the project creation.
+    """
+
     def test_nested_project(self):
+        """
+        Test the creation of a project inside another project.
+        """
+
         self.assertRaises(
             NestedProjectError,
             lambda: create_test_project(
@@ -17,6 +25,10 @@ class TestProject(AmbrogioTestCase):
         )
 
     def test_create_procedures(self):
+        """
+        Test the creation of procedures.
+        """
+        
         procedures = self.procedure_loader.list()
         self.assertEqual(len(procedures), 0)
 

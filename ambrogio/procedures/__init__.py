@@ -34,6 +34,8 @@ class Procedure:
     def _additional_layouts(self) -> List[Layout]:
         """
         Additional layouts to be added to Ambrogio dashboard.
+
+        :return: A list of layouts.
         """
         
         return []

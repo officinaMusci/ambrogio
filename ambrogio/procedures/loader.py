@@ -1,3 +1,5 @@
+from types import ModuleType
+from typing import List, Callable, Generator
 import inspect
 from importlib import import_module
 from pkgutil import iter_modules
@@ -6,11 +8,15 @@ from configparser import ConfigParser
 from ambrogio.procedures import Procedure
 
 
-def walk_modules(path):
+def walk_modules(path: str) -> List[ModuleType]:
     """
     Loads a module and all its submodules from the given module path and
     returns them. If *any* module throws an exception while importing, that
     exception is thrown back.
+
+    :param path: The module path to load.
+
+    :return: A list of modules.
     """
 
     mods = []
@@ -35,6 +41,8 @@ class ProcedureLoader:
     """
     ProcedureLoader is a class which locates, loads and 
     runs procedures in a Ambrogio project.
+
+    :param config: The project configuration.
     """
 
     def __init__(self, config: ConfigParser):
@@ -42,29 +50,51 @@ class ProcedureLoader:
         self._procedures = {}
         self._load_all_procedures()
 
-    def _load_procedures(self, module: str):
+    def _load_procedures(self, module: ModuleType):
+        """
+        Load all procedures from the given module.
+
+        :param module: The module to load procedures from.
+        """
+
         for procedure in self.iter_procedure_classes(module):
             self._procedures[procedure.name] = procedure
 
     def _load_all_procedures(self):
+        """
+        Load all procedures from the project.
+
+        :raises ImportError: If the procedure module cannot be imported.
+        """
+        
         try:
-            for module in walk_modules(self.config['settings']['procedure_module']):
+            modules = walk_modules(self.config['settings']['procedure_module'])
+            
+            for module in modules:
                 self._load_procedures(module)
         
         except ImportError:
             raise
     
-    def list(self):
+    def list(self) -> List[str]:
         """
         Return a list with the names of all procedures available in the project.
+
+        :return: A list of procedure names.
         """
 
         return list(self._procedures.keys())
 
-    def load(self, procedure_name: str):
+    def load(self, procedure_name: str) -> Callable[[], Procedure]:
         """
         Return the Procedure class for the given procedure name.
         If the procedure name is not found, raise a KeyError.
+
+        :param procedure_name: The name of the procedure to load.
+
+        :raises KeyError: If the procedure name is not found.
+
+        :return: The Procedure class.
         """
 
         try:
@@ -77,16 +107,30 @@ class ProcedureLoader:
         """
         Run the Procedure execute method for the given procedure name.
         If the procedure name is not found, raise a KeyError.
+
+        :param procedure_name: The name of the procedure to run.
+
+        :raises KeyError: If the procedure name is not found.
+
+        :return: The Procedure class.
         """
 
         procedure: Procedure = self.load(procedure_name)()
         procedure._execute()
 
     @staticmethod
-    def iter_procedure_classes(module):
+    def iter_procedure_classes(
+        module: ModuleType
+    ) -> Generator[Callable[[], Procedure], None, None]:
         """
         Return an iterator over all procedure classes defined in the given
         module that can be instantiated (i.e. which have name)
+
+        :param module: The module to iterate over.
+
+        :raises TypeError: If the module is not a module.
+
+        :return: An iterator over all procedure classes.
         """
 
         for obj in vars(module).values():

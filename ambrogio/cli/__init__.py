@@ -55,7 +55,7 @@ available_commands = {
 
 def execute(argv = None):
     """
-    Run Ambrogio via command-line tool.
+    Run Ambrogio via command-line interface.
     """
     
     signal.signal(signal.SIGINT, _interrupt_handler)

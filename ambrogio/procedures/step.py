@@ -1,4 +1,4 @@
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, Any
 from threading import Thread
 from inspect import getsource
 
@@ -26,7 +26,7 @@ class StepProcedure(Procedure):
 
 
     @property
-    def current_step(self):
+    def current_step(self) -> Optional[dict]:
         """
         The current step.
         """
@@ -37,7 +37,7 @@ class StepProcedure(Procedure):
         )
 
     @property
-    def current_step_name(self):
+    def current_step_name(self) -> Optional[str]:
         """
         The name of the current step.
         """
@@ -45,22 +45,26 @@ class StepProcedure(Procedure):
         return self.current_step['name'] if self.current_step else None
 
     @property
-    def total_steps(self):
+    def total_steps(self) -> int:
         """
         The total number of steps.
+
+        :return: The total number of steps.
         """
 
         return len(self._steps)
 
     @property
-    def completed_steps(self):
+    def completed_steps(self) -> int:
         """
         The number of completed steps.
+
+        :return: The number of completed steps.
         """
 
         return self._completed_steps
 
-    def _execute(self):
+    def _execute(self) -> Any:
         """
         Execute the procedure.
         """
@@ -128,6 +132,8 @@ class StepProcedure(Procedure):
         :param blocking: If the step can block the execution of the procedure.
         :param args: The arguments to pass to the function.
         :param kwargs: The keyword arguments to pass to the function.
+
+        :raises ValueError: If the function is not callable.
         """
 
         if name is None:
@@ -142,13 +148,16 @@ class StepProcedure(Procedure):
             'kwargs': kwargs
         })
 
-    def _execute_step(self, step):
+    def _execute_step(self, step: dict):
         """
         Execute a step.
 
-        If the step is blocking and it raises an exception the procedure execution will be stopped and the exit event will be set.
+        If the step is blocking and it raises an exception the procedure
+        execution will be stopped and the exit event will be set.
 
         :param step: The step to execute.
+
+        :raises Exception: If the step raises an exception.
         """
 
         try:
@@ -173,7 +182,10 @@ class StepProcedure(Procedure):
     @property
     def _additional_layouts(self) -> List[Layout]:
         """
-        Additional layouts to be added to Ambrogio dashboard.
+        Additional layouts to be added to Ambrogio command-line interface
+        dashboard.
+
+        :return: A list of layouts.
         """
 
         progress = Layout(name='progress', size=3)

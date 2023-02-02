@@ -9,12 +9,21 @@ from ambrogio.environment import get_closest_ini, NestedProjectError
 
 
 def create_project(
-        project_name: str,
-        dest_directory_path: Union[str, os.PathLike] = '.',
-        procedure_module_name: str = 'procedures'
-    ):
+    project_name: str,
+    dest_directory_path: Union[str, os.PathLike] = '.',
+    procedure_module_name: str = 'procedures'
+):
     """
     Create an Ambrogio project.
+
+    :param project_name: The name of the project.
+    :param dest_directory_path: The path to the directory where the project
+    will be created.
+    :param procedure_module_name: The name of the module where the procedures
+    will be stored.
+
+    :raises NestedProjectError: If the project is being created inside an
+    existing Ambrogio project.
     """
 
     if get_closest_ini(dest_directory_path):
@@ -43,19 +52,27 @@ def create_project(
         init_file.write(
             '# This package will contain the procedures of your Ambrogio project'
             '#'
-            '# Please refer to the documentation for information on how to create and'
-            '# manage your procedures.'
+            '# Please refer to the documentation for information on how to'
+            '# create and manage your procedures.'
         )
 
 
 def create_procedure(
-        procedure_name: str,
-        template_name:str = 'basic',
-        project_path: Union[str, os.PathLike] = '.',
-        procedure_module:str = 'procedures'
-    ):
+    procedure_name: str,
+    template_name:str = 'basic',
+    project_path: Union[str, os.PathLike] = '.',
+    procedure_module:str = 'procedures'
+):
     """
     Create an Ambrogio procedure using a given template.
+
+    :param procedure_name: The name of the procedure.
+    :param template_name: The name of the template to use.
+    :param project_path: The path to the project directory.
+    :param procedure_module: The name of the module where the procedures
+    will be stored.
+
+    :raises FileExistsError: If the procedure already exists.
     """
 
     camel_case_name = ''.join(

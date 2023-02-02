@@ -61,6 +61,12 @@ def start():
 
 
 def show_dashboard(procedure: Procedure):
+    """
+    Show a dashboard with live performances monitoring.
+
+    :param procedure: The procedure to monitor.
+    """
+
     process = psutil.Process(os.getpid())
     timer = Timer()
 
@@ -73,6 +79,11 @@ def show_dashboard(procedure: Procedure):
         }
 
     def generate_dashboard():
+        """
+        Generate the dashboard.
+
+        :return: A rich.layout.Layout object.
+        """
         performance_table = Table(
             show_header=True,
             header_style='bold',

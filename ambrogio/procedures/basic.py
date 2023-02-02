@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Any
 
 from rich.layout import Layout
 
@@ -13,16 +13,22 @@ class BasicProcedure(Procedure):
     def __init__(self):
         super().__init__()
 
-    def _execute(self):
+    def _execute(self) -> Any:
         """
         Execute the procedure.
         """
 
-        self.execute()
+        result = self.execute()
 
         self._finished = True
 
-    def execute(self):
+        return result
+
+    def execute(self) -> Any:
+        """
+        Execute the procedure.
+        """
+        
         raise NotImplementedError(
             f'{self.__class__.__name__}.execute callback is not defined'
         )
@@ -31,6 +37,8 @@ class BasicProcedure(Procedure):
     def _additional_layouts(self) -> List[Layout]:
         """
         Additional layouts to be added to Ambrogio dashboard.
+
+        :return: A list of layouts.
         """
 
         return []

@@ -6,7 +6,15 @@ from . import AmbrogioTestCase
 
 
 class TestBasicProcedure(AmbrogioTestCase):
+    """
+    Test the basic procedure.
+    """
+
     def test_basic_procedure(self):
+        """
+        Test the basic procedure.
+        """
+        
         create_procedure(
             'Basic procedure',
             'basic',
