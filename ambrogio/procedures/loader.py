@@ -1,5 +1,6 @@
+import os
 from types import ModuleType
-from typing import List, Callable, Generator
+from typing import List, Callable, Generator, Union
 import inspect
 from importlib import import_module
 from pkgutil import iter_modules
@@ -43,10 +44,17 @@ class ProcedureLoader:
     runs procedures in a Ambrogio project.
 
     :param config: The project configuration.
+    :param project_path: The path to the project.
     """
 
-    def __init__(self, config: ConfigParser):
+    def __init__(
+        self,
+        config: ConfigParser,
+        project_path: Union[str, os.PathLike] = '.'
+    ):
         self.config = config
+        self._project_path = project_path
+
         self._procedures = {}
         self._load_all_procedures()
 
@@ -115,7 +123,7 @@ class ProcedureLoader:
         :return: The Procedure class.
         """
 
-        procedure: Procedure = self.load(procedure_name)()
+        procedure: Procedure = self.load(procedure_name)(self._project_path)
         procedure._execute()
 
     @staticmethod

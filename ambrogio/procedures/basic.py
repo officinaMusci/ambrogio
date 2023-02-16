@@ -10,8 +10,8 @@ class BasicProcedure(Procedure):
     Class for Ambrogio basic procedures.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def _execute(self) -> Any:
         """

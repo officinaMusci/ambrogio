@@ -21,9 +21,8 @@ class StepProcedure(Procedure):
     _current_step: int = 0
     _completed_steps: int = 0
 
-    def __init__(self):
-        super().__init__()
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     @property
     def current_step(self) -> Optional[dict]:

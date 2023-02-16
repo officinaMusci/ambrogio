@@ -3,6 +3,7 @@ import psutil
 from time import sleep
 
 from rich.table import Table
+from rich.text import Text
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.live import Live
@@ -138,9 +139,28 @@ class Dashboard():
             )
         )
 
+        procedure_logs = self.procedure.logs
+
+        console_logs = Text()
+        for log in procedure_logs:
+            time = log['time']
+            if '.' in time:
+                time = time[:time.index('.') + 4]
+
+            console_logs.append(f'{time} ', style='dim')
+
+            level = log['level']
+            if len(level) < len('CRITICAL'):
+                level += ' ' * (len('CRITICAL') - len(level))
+
+            console_logs.append(f' {level} | ', style='bold')
+            console_logs.append(log['message'])
+            console_logs.append('\n')
+
+
         layout['main']['console'].update(
             Panel(
-                '',
+                console_logs,
                 title='Console'
             )
         )
