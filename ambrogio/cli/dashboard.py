@@ -52,6 +52,8 @@ class Dashboard():
             while not self.procedure.finished and check_events():
                 live.update(self._generate_dashboard())
                 sleep(.1)
+            
+            live.update(self._generate_dashboard())
 
     def _get_performances(self):
         """
