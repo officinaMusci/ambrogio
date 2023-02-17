@@ -77,8 +77,13 @@ def execute(argv = None):
     # Create a new procedure
     if command_name == 'create':
         procedure_name = Prompt.text('Type the procedure name')
-        if procedure_name:
-            create_procedure(procedure_name)
+        procedure_type = Prompt.list('Select the procedure type', [
+            ('Basic procedure', 'basic'),
+            ('Step procedure', 'step')
+        ])
+
+        if procedure_name and procedure_type:
+            create_procedure(procedure_name, procedure_type)
 
     # Start the project
     elif command_name == 'start':
