@@ -56,9 +56,6 @@ def create_project(
             '# create and manage your procedures.'
         )
 
-    log_path: Path = project_path / 'logs'
-    log_path.mkdir()
-
 
 def create_procedure(
     procedure_name: str,

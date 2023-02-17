@@ -1,11 +1,9 @@
 from typing import List, Optional, Callable, Any
 from threading import Thread
-from inspect import getsource
 
-from rich.layout import Layout
 from rich.panel import Panel
-from rich.progress_bar import ProgressBar
-from rich.syntax import Syntax
+from rich.table import Column
+from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 
 from ambrogio.procedures import Procedure
 from ambrogio.utils.threading import exit_event
@@ -62,6 +60,31 @@ class StepProcedure(Procedure):
         """
 
         return self._completed_steps
+
+    @property
+    def _dashboard_widgets(self) -> List[Panel]:
+        """
+        Additional widgets to be added to Ambrogio dashboard.
+
+        :return: A list of Rich panels.
+        """
+
+        progress = Progress(
+            TextColumn("[progress.description]{task.description}"),
+            TaskProgressColumn(justify='right'),
+            BarColumn(table_column=Column(ratio=1, justify='right')),
+            expand=True,
+            auto_refresh=False
+        )
+        
+        progress.add_task(
+            'Steps',
+            total=self.total_steps,
+            completed=self.completed_steps,
+            finished_style='green'
+        )
+        
+        return [Panel(progress, title='Progress')]
 
     def _execute(self) -> Any:
         """
@@ -177,44 +200,3 @@ class StepProcedure(Procedure):
         for step in self._parallel_steps:
             if step.is_alive():
                 step.join()
-
-    @property
-    def _additional_layouts(self) -> List[Layout]:
-        """
-        Additional layouts to be added to Ambrogio command-line interface
-        dashboard.
-
-        :return: A list of layouts.
-        """
-
-        progress = Layout(name='progress', size=3)
-        current_step_function = Layout(name='current_step_function', ratio=1)
-
-        progress.update(
-            Panel(
-                ProgressBar(
-                    total=self.total_steps,
-                    completed=self.completed_steps,
-                    finished_style='green'
-                ),
-                title="Progress"
-            )
-        )
-
-        current_step_function.update(
-            Panel(
-                Syntax(
-                    getsource(self.current_step['function'])
-                        if self.current_step
-                        else '',
-                    'python',
-                    line_numbers=True
-                ),
-                title='Current step function'
-            )
-        )
-        
-        return [
-            progress,
-            current_step_function
-        ]

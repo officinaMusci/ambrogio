@@ -32,13 +32,3 @@ class BasicProcedure(Procedure):
         raise NotImplementedError(
             f'{self.__class__.__name__}.execute callback is not defined'
         )
-
-    @property
-    def _additional_layouts(self) -> List[Layout]:
-        """
-        Additional layouts to be added to Ambrogio dashboard.
-
-        :return: A list of layouts.
-        """
-
-        return []

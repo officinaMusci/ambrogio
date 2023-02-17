@@ -3,8 +3,7 @@ import psutil
 from time import sleep
 
 from rich.table import Table
-from rich.text import Text
-from rich.layout import Layout
+from rich.columns import Columns
 from rich.panel import Panel
 from rich.live import Live
 
@@ -49,10 +48,10 @@ class Dashboard():
         self._process = psutil.Process(os.getpid())
         self._timer = Timer()
 
-        with Live(self._generate_dashboard(), refresh_per_second=10) as live:
+        with Live(self._generate_dashboard(), refresh_per_second=4) as live:
             while not self.procedure.finished and check_events():
                 live.update(self._generate_dashboard())
-                sleep(.1)
+                sleep(1/4)
             
             live.update(self._generate_dashboard())
 
@@ -85,7 +84,7 @@ class Dashboard():
         performance_table = Table(
             show_header=True,
             header_style='bold',
-            expand=True   
+            expand=True
         )
         
         performance_table.add_column('Elapsed time', justify='right')
@@ -108,61 +107,9 @@ class Dashboard():
             f"{self.max_performances['threads']}"
         )
 
-        layout = Layout(name='root')
+        columns = Columns([
+            Panel(performance_table, title='Performances'),
+            *self.procedure._dashboard_widgets
+        ], expand=True)
 
-        layout.split(
-            Layout(name='header', size=3),
-            Layout(ratio=1, name='main')
-        )
-
-        layout['header'].update(
-            Panel(
-                f"Procedure: {self.procedure.name}",
-                title='Ambrogio'
-            )
-        )
-        
-        layout['main'].split_row(
-            Layout(name='procedure_status', ratio=1),
-            Layout(name='console', ratio=2)
-        )
-        
-        layout['procedure_status'].split_column(
-            Layout(name='performances', size=9),
-            *self.procedure._additional_layouts
-        )
-        
-        layout['procedure_status']['performances'].update(
-            Panel(
-                performance_table,
-                title='Performances'
-            )
-        )
-
-        procedure_logs = self.procedure.logs
-
-        console_logs = Text()
-        for log in procedure_logs:
-            time = log['time']
-            if '.' in time:
-                time = time[:time.index('.') + 4]
-
-            console_logs.append(f'{time} ', style='dim')
-
-            level = log['level']
-            if len(level) < len('CRITICAL'):
-                level += ' ' * (len('CRITICAL') - len(level))
-
-            console_logs.append(f' {level} | ', style='bold')
-            console_logs.append(log['message'])
-            console_logs.append('\n')
-
-
-        layout['main']['console'].update(
-            Panel(
-                console_logs,
-                title='Console'
-            )
-        )
-
-        return layout
+        return columns
