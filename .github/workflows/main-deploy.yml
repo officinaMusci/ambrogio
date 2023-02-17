@@ -1,7 +1,7 @@
 name: Test and deploy Ambrogio on PyPI
 
 on:
-  push:
+  release:
     branches:
       - "main"
 
