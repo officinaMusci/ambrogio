@@ -1,6 +1,5 @@
-from typing import List, Any
-
-from rich.layout import Layout
+from typing import Any
+import logging
 
 from ambrogio.procedures import Procedure
 
@@ -18,9 +17,12 @@ class BasicProcedure(Procedure):
         Execute the procedure.
         """
 
-        result = self.execute()
+        logging.info(f'Executing "{self.name}" procedure...')
 
+        result = self.execute()
         self._finished = True
+        
+        logging.info(f'Procedure "{self.name}" executed successfully')
 
         return result
 

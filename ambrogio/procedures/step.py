@@ -1,5 +1,6 @@
 from typing import List, Optional, Callable, Any
 from threading import Thread
+import logging
 
 from rich.panel import Panel
 from rich.table import Column
@@ -91,6 +92,8 @@ class StepProcedure(Procedure):
         Execute the procedure.
         """
 
+        logging.info(f'Executing "{self.name}" procedure...')
+
         self.setUp()
 
         if not self.total_steps:
@@ -120,6 +123,8 @@ class StepProcedure(Procedure):
         self._finished = True
 
         self.tearDown()
+
+        logging.info(f'Procedure "{self.name}" executed successfully')
 
     def setUp(self):
         """
@@ -158,6 +163,8 @@ class StepProcedure(Procedure):
         :raises ValueError: If the function is not callable.
         """
 
+        logging.debug(f'Adding step "{name}" to procedure "{self.name}"')
+
         if name is None:
             name = function.__name__
 
@@ -182,6 +189,8 @@ class StepProcedure(Procedure):
         :raises Exception: If the step raises an exception.
         """
 
+        logging.debug(f'Executing step "{step["name"]}"...')
+
         try:
             step['function'](*step['args'], **step['kwargs'])
             self._completed_steps += 1
@@ -196,6 +205,8 @@ class StepProcedure(Procedure):
         """
         Join the parallel steps.
         """
+
+        logging.debug('Joining parallel steps...')
 
         for step in self._parallel_steps:
             if step.is_alive():
