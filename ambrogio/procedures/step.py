@@ -72,8 +72,8 @@ class StepProcedure(Procedure):
 
         progress = Progress(
             TextColumn("[progress.description]{task.description}"),
-            TaskProgressColumn(justify='right'),
-            BarColumn(table_column=Column(ratio=1, justify='right')),
+            BarColumn(table_column=Column(ratio=1, justify='center')),
+            TaskProgressColumn(),
             expand=True,
             auto_refresh=False
         )
