@@ -34,6 +34,9 @@ def _interrupt_handler(*args):
 
     if confirm:
         exit_event.set()
+
+        print('Interrupting program...')
+        
         sys.exit(0)
 
 
