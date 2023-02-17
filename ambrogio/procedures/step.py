@@ -72,7 +72,7 @@ class StepProcedure(Procedure):
 
         progress = Progress(
             TextColumn("[progress.description]{task.description}"),
-            BarColumn(table_column=Column(ratio=1, justify='center')),
+            BarColumn(),
             TaskProgressColumn(),
             expand=True,
             auto_refresh=False
@@ -108,11 +108,14 @@ class StepProcedure(Procedure):
                     args=(step,)
                 )
                 
+                logging.debug(f'Starting parallel step "{step["name"]}"...')
                 parallel_step.start()
                 self._parallel_steps.append(parallel_step)
 
             else:
                 self._join_parallel_steps()
+
+                logging.debug(f'Executing step "{step["name"]}"...')
                 self._execute_step(step)
 
             if exit_event.is_set():
@@ -189,15 +192,17 @@ class StepProcedure(Procedure):
         :raises Exception: If the step raises an exception.
         """
 
-        logging.debug(f'Executing step "{step["name"]}"...')
-
         try:
             step['function'](*step['args'], **step['kwargs'])
             self._completed_steps += 1
 
         except Exception as e:
+            logging.error(f'Step "{step["name"]}" raised an exception: {e}')
+
             if step['blocking']:
+                logging.error('Stopping procedure execution')
                 exit_event.set()
+                raise e
 
             raise e
 
