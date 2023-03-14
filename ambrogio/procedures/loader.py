@@ -111,7 +111,7 @@ class ProcedureLoader:
         except KeyError:
             raise KeyError(f"Procedure not found: {procedure_name}")
 
-    def run(self, procedure_name: str):
+    def run(self, procedure_name: str) -> Procedure:
         """
         Run the Procedure execute method for the given procedure name.
         If the procedure name is not found, raise a KeyError.
@@ -120,11 +120,13 @@ class ProcedureLoader:
 
         :raises KeyError: If the procedure name is not found.
 
-        :return: The Procedure class.
+        :return: The Procedure instance.
         """
 
         procedure: Procedure = self.load(procedure_name)(self._project_path)
         procedure._execute()
+
+        return procedure
 
     @staticmethod
     def iter_procedure_classes(
