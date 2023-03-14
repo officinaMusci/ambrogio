@@ -123,7 +123,7 @@ class ProcedureLoader:
         :return: The Procedure instance.
         """
 
-        procedure: Procedure = self.load(procedure_name)(self._project_path)
+        procedure: Procedure = self.load(procedure_name)()
         procedure._execute()
 
         return procedure
