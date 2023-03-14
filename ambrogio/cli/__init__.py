@@ -67,11 +67,12 @@ def execute():
     if not get_closest_ini('.'):
         create = Prompt.confirm('No Ambrogio project found. Do you want to create one?')
 
-        # Create a new project
         if create:
             project_name = Prompt.text('Type the project name')
+            
             if project_name:
                 create_project(project_name)
+                start()
 
     else:
         start()
