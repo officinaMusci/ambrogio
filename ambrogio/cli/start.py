@@ -7,6 +7,26 @@ from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.utils.threading import exit_event
 
 
+def prompt_create_procedure():
+    """
+    Prompt the user for a procedure name and type.
+    """
+
+    procedure_name = Prompt.text('Type the procedure name')
+    procedure_type = Prompt.list('Select the procedure type', [
+        ('Basic procedure', 'basic'),
+        ('Step procedure', 'step')
+    ])
+
+    if procedure_name and procedure_type:
+        create_procedure(procedure_name, procedure_type)
+
+        print(
+            f"Procedure {procedure_name} created successfully"
+            f"in {config['settings']['procedure_module']} module"
+        )
+
+
 def start():
     """
     Prompt the user for a procedure to start a procedure with
@@ -20,25 +40,29 @@ def start():
     if len(procedure_list):
         procedure_name = Prompt.list(
             'Choose a procedure to run',
-            procedure_list
+            (*procedure_list, ('Create a new procedure', None))
         )
 
-        procedure = procedure_loader.load(procedure_name)
-        procedure = procedure()
+        if not procedure_name:
+            prompt_create_procedure()
 
-        dashboard = Dashboard(procedure)
+        else:
+            procedure = procedure_loader.load(procedure_name)
+            procedure = procedure()
 
-        show_dashboard_thread = Thread(target=dashboard.show)
-        show_dashboard_thread.start()
+            dashboard = Dashboard(procedure)
 
-        try:
-            procedure._execute()
-        
-        except Exception as e:
-            exit_event.set()
-            raise e
+            show_dashboard_thread = Thread(target=dashboard.show)
+            show_dashboard_thread.start()
 
-        show_dashboard_thread.join()
+            try:
+                procedure._execute()
+            
+            except Exception as e:
+                exit_event.set()
+                raise e
+
+            show_dashboard_thread.join()
 
 
     else:
@@ -46,3 +70,8 @@ def start():
             f"The {config['settings']['procedure_module']}"
             ' module doesn\'t contain any Procedure class'
         )
+
+        create = Prompt.confirm('Do you want to create a new procedure?')
+
+        if create:
+            prompt_create_procedure()

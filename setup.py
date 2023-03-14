@@ -7,7 +7,7 @@ long_description = (project_directory / "README.md").read_text()
 
 setup(
     name='ambrogio',
-    version='0.4.5',
+    version='0.4.6',
 
     description='A simple framework to handle complex scripts.',
     long_description=long_description,

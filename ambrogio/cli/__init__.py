@@ -4,7 +4,8 @@ import logging
 
 from ambrogio.cli.start import start
 from ambrogio.cli.prompt import Prompt
-from ambrogio.utils.project import create_project, create_procedure
+from ambrogio.environment import get_closest_ini
+from ambrogio.utils.project import create_project
 from ambrogio.utils.threading import exit_event
 
 from rich.logging import RichHandler
@@ -56,47 +57,21 @@ available_commands = {
 }
 
 
-def execute(argv = None):
+def execute():
     """
     Run Ambrogio via command-line interface.
     """
     
     signal.signal(signal.SIGINT, _interrupt_handler)
 
-    if argv is None:
-        argv = sys.argv
+    if not get_closest_ini('.'):
+        create = Prompt.confirm('No Ambrogio project found. Do you want to create one?')
 
-    command_name = _pop_command_name(argv)
+        # Create a new project
+        if create:
+            project_name = Prompt.text('Type the project name')
+            if project_name:
+                create_project(project_name)
 
-    # Create a new project
-    if command_name == 'init':
-        project_name = Prompt.text('Type the project name')
-        if project_name:
-            create_project(project_name)
-
-    # Create a new procedure
-    if command_name == 'create':
-        procedure_name = Prompt.text('Type the procedure name')
-        procedure_type = Prompt.list('Select the procedure type', [
-            ('Basic procedure', 'basic'),
-            ('Step procedure', 'step')
-        ])
-
-        if procedure_name and procedure_type:
-            create_procedure(procedure_name, procedure_type)
-
-    # Start the project
-    elif command_name == 'start':
-        start()
-
-    elif not command_name:
-        print("Usage:")
-        print("  ambrogio <command>\n")
-        print("Available commands:")
-
-        for name, description in available_commands.items():
-            print(f"  {name:<13} {description}")
-    
     else:
-        print(f"Unknown command: {command_name}\n")
-        print('Use \"ambrogio\" to see available commands')
+        start()
