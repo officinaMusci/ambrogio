@@ -19,6 +19,7 @@ class StepProcedure(Procedure):
     _parallel_steps: List[Thread] = []
     _current_step: int = 0
     _completed_steps: int = 0
+    _failed_steps: int = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -61,6 +62,16 @@ class StepProcedure(Procedure):
         """
 
         return self._completed_steps
+
+    @property
+    def failed_steps(self) -> int:
+        """
+        The number of failed steps.
+
+        :return: The number of failed steps.
+        """
+
+        return self._failed_steps
 
     @property
     def _dashboard_widgets(self) -> List[Panel]:
@@ -198,13 +209,12 @@ class StepProcedure(Procedure):
 
         except Exception as e:
             logging.error(f'Step "{step["name"]}" raised an exception: {e}')
+            self._failed_steps += 1
 
             if step['blocking']:
                 logging.error('Stopping procedure execution')
                 exit_event.set()
                 raise e
-
-            raise e
 
     def _join_parallel_steps(self):
         """
