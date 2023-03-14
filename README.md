@@ -11,15 +11,13 @@ pip install ambrogio
 
 ## Usage
 
-### Create a new project
-
-To create a new project, run the following command:
+To start an Ambrogio project, run the following command:
 
 ```bash
-ambrogio init
+ambrogio
 ```
 
-You will be prompted to enter the name of the project.
+If no project can be found in the current folder, then you will be prompted to confirm you want to create one and to enter its name.
 
 This will create a new folder with the following structure:
 
@@ -38,25 +36,7 @@ procedure_module = procedures
 
 The `procedure_module` is the name of the folder where the procedures are stored.
 
-### Create a new procedure
-
-To create a new procedure, run the following command:
-
-```bash
-ambrogio create
-```
-
-You will be prompted to enter the name and the type of the procedure. The procedure will be created in the `procedures` folder.
-
-### Run a procedure
-
-To run a procedure, run the following command:
-
-```bash
-ambrogio start
-```
-
-You will be prompted to select the procedure to execute.
+If no procedure can be found in the current project, you will be directly prompted to enter the name and the type of a new procedure. Otherwise, you will be prompted to select the procedure to execute or to create a new one.
 
 ## Procedure types
 
