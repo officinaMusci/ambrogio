@@ -1,4 +1,6 @@
+import os
 import sys
+from pathlib import Path
 import signal
 import logging
 
@@ -41,15 +43,6 @@ def _interrupt_handler(*args):
         sys.exit(0)
 
 
-def _pop_command_name(argv):
-    i = 0
-    for arg in argv[1:]:
-        if not arg.startswith('-'):
-            del argv[i]
-            return arg
-        i += 1
-
-
 available_commands = {
     'init': 'Create a new project',
     'create': 'Create a new procedure',
@@ -72,6 +65,10 @@ def execute():
             
             if project_name:
                 create_project(project_name)
+
+                project_path: Path = Path('.') / project_name
+                os.chdir(project_path.resolve())
+
                 start()
 
     else:
