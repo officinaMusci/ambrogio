@@ -1,5 +1,5 @@
 import os
-from typing import List, Union, Any
+from typing import List
 from pathlib import Path
 
 from rich.panel import Panel
@@ -13,27 +13,15 @@ class Procedure:
 
     name: str
 
-    _project_path: Path
-
     _logs: List[dict] = []
     _log_dir: Path
     _log_file: Path
 
     _finished: bool = False
 
-    def __init__(self, project_path: Union[str, os.PathLike] = '.'):
+    def __init__(self):
         if not getattr(self, 'name', None):
             raise ValueError(f"{type(self).__name__} must have a name")
-
-        self._project_path = Path(project_path)
-
-    @property
-    def project_path(self) -> Path:
-        """
-        The project path.
-        """
-
-        return self._project_path
 
     @property
     def finished(self) -> bool:
