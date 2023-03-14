@@ -4,10 +4,11 @@ from ambrogio.cli.prompt import Prompt
 from ambrogio.cli.dashboard import Dashboard
 from ambrogio.environment import init_env
 from ambrogio.procedures.loader import ProcedureLoader
+from ambrogio.utils.project import create_procedure
 from ambrogio.utils.threading import exit_event
 
 
-def prompt_create_procedure():
+def prompt_create_procedure(config):
     """
     Prompt the user for a procedure name and type.
     """
@@ -22,8 +23,8 @@ def prompt_create_procedure():
         create_procedure(procedure_name, procedure_type)
 
         print(
-            f"Procedure {procedure_name} created successfully"
-            f"in {config['settings']['procedure_module']} module"
+            f"Procedure '{procedure_name}' created successfully"
+            f" in '{config['settings']['procedure_module']}' module"
         )
 
 
@@ -40,11 +41,11 @@ def start():
     if len(procedure_list):
         procedure_name = Prompt.list(
             'Choose a procedure to run',
-            (*procedure_list, ('Create a new procedure', None))
+            [*procedure_list, ('Create a new procedure', None)]
         )
 
         if not procedure_name:
-            prompt_create_procedure()
+            prompt_create_procedure(config)
 
         else:
             procedure = procedure_loader.load(procedure_name)
@@ -67,11 +68,11 @@ def start():
 
     else:
         print(
-            f"The {config['settings']['procedure_module']}"
+            f"The '{config['settings']['procedure_module']}'"
             ' module doesn\'t contain any Procedure class'
         )
 
         create = Prompt.confirm('Do you want to create a new procedure?')
 
         if create:
-            prompt_create_procedure()
+            prompt_create_procedure(config)
