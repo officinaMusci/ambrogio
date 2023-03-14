@@ -3,11 +3,10 @@ from threading import Thread
 import logging
 
 from rich.panel import Panel
-from rich.table import Column
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 
 from ambrogio.procedures import Procedure
-from ambrogio.utils.threading import exit_event
+from ambrogio.utils.threading import exit_event, check_events
 
 
 class StepProcedure(Procedure):
@@ -125,20 +124,19 @@ class StepProcedure(Procedure):
 
             else:
                 self._join_parallel_steps()
+                
+                if check_events():
+                    logging.debug(f'Executing step "{step["name"]}"...')
+                    self._execute_step(step)
 
-                logging.debug(f'Executing step "{step["name"]}"...')
-                self._execute_step(step)
-
-            if exit_event.is_set():
-                break
-
-        self._join_parallel_steps()
+        if check_events():
+            self._join_parallel_steps()
         
-        self._finished = True
+            self._finished = True
 
-        self.tearDown()
+            self.tearDown()
 
-        logging.info(f'Procedure "{self.name}" executed successfully')
+            logging.info(f'Procedure "{self.name}" executed successfully')
 
     def setUp(self):
         """
