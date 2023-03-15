@@ -1,18 +1,20 @@
 import unittest
 import os
 import sys
-from typing import Optional
+from typing import Optional, Tuple
 from tempfile import TemporaryDirectory
+from configparser import ConfigParser
 from pathlib import Path
 
+from ambrogio.procedures.loader import ProcedureLoader
 from ambrogio.utils.project import create_project
 from ambrogio.environment import init_env
 
 
 def create_test_project(
-        project_name: str = 'test_project',
-        test_path: Optional[Path] = None
-    ):
+    project_name: str = 'test_project',
+    test_path: Optional[Path] = None
+) -> Tuple[Optional[TemporaryDirectory], Path, ConfigParser, ProcedureLoader]:
     prev_cwd = os.getcwd()
 
     test_directory = None
