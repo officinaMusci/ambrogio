@@ -3,6 +3,7 @@ import unittest
 from ambrogio.utils.project import create_procedure
 
 from . import AmbrogioTestCase
+from ambrogio.procedures.step import StepProcedure
 
 
 class TestStepProcedure(AmbrogioTestCase):
@@ -50,7 +51,7 @@ class TestStepProcedure(AmbrogioTestCase):
 
         self.procedure_loader._load_all_procedures()
 
-        procedure = self.procedure_loader.load(name)()
+        procedure: StepProcedure = self.procedure_loader.load(name)()
         
         procedure.add_step(self.increment_normals)
         procedure.add_step(self.check_normals, count = 1)
