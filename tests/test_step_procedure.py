@@ -51,7 +51,9 @@ class TestStepProcedure(AmbrogioTestCase):
 
         self.procedure_loader._load_all_procedures()
 
-        procedure: StepProcedure = self.procedure_loader.load(name)()
+        procedure: StepProcedure = self.procedure_loader.load(name)(
+            self.config
+        )
         
         procedure.add_step(self.increment_normals)
         procedure.add_step(self.check_normals, count = 1)
