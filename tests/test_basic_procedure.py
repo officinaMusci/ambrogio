@@ -14,16 +14,18 @@ class TestBasicProcedure(AmbrogioTestCase):
         """
         Test the basic procedure.
         """
+
+        name = 'Test basic procedure'
         
         create_procedure(
-            'Basic procedure',
+            name,
             'basic',
             self.project_path
         )
 
         self.procedure_loader._load_all_procedures()
 
-        self.procedure_loader.run('Basic procedure')
+        self.procedure_loader.run(name, False)
 
 
 if __name__ == '__main__':
