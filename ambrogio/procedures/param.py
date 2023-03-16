@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Union, Optional, Any
 
 from ambrogio.cli.prompt import Prompt
 
@@ -11,11 +11,16 @@ class ProcedureParam:
     """
 
     name: str
-    type: type
+    type: Union[bool, int, float, str]
     value: Optional[Any] = None
     required: bool = False
 
     def __post_init__(self):
+        if self.type not in (bool, int, float, str):
+            raise TypeError(
+                f"Parameter {self.name} must be of type bool, int, float or str"
+            )
+
         if self.value != None and not self._check_type(self.value, self.type):
             raise TypeError(
                 f"Parameter {self.name} must be of type {self.type.__name__}"
@@ -41,12 +46,18 @@ class ProcedureParam:
 
             self.value = self.type(value)
             
-    def _check_type(self, value: Any, type_: Optional[type] = None):
+    def _check_type(
+        self,
+        value: Any,
+        type_: Optional[Union[bool, int, float, str]] = None
+    ) -> bool:
         """
         Check whether the given value is of the correct type.
         """
 
-        return isinstance(value, type_ or self.type)
+        type_ = type_ or self.type
+
+        return type_ in (bool, int, float, str) and isinstance(value, type_)
 
     def __repr__(self):
         return f"<ProcedureParam {self.name} ({self.type.__name__})>"

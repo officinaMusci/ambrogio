@@ -30,14 +30,10 @@ class TestProcedureParams(AmbrogioTestCase):
         procedure: BasicProcedure = self.procedure_loader.load(name)
         
         procedure.params = [
-            ProcedureParam('strParam', str, value = 'test'),
+            ProcedureParam('boolParam', bool, value = True),
             ProcedureParam('intParam', int, value = 1),
             ProcedureParam('floatParam', float, value = 1.0),
-            ProcedureParam('boolParam', bool, value = True),
-            ProcedureParam('listParam', list, value = [1, 2, 3]),
-            ProcedureParam('dictParam', dict, value = {'a': 1, 'b': 2}),
-            ProcedureParam('tupleParam', tuple, value = (1, 2, 3)),
-            ProcedureParam('setParam', set, value = {1, 2, 3}),
+            ProcedureParam('strParam', str, value = 'test'),
 
             ProcedureParam('required', str, value = 'test', required = True),
             ProcedureParam('missing_required', str, required = True),
