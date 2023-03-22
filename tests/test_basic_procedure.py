@@ -25,7 +25,7 @@ class TestBasicProcedure(AmbrogioTestCase):
 
         self.procedure_loader._load_all_procedures()
 
-        self.procedure_loader.run(name, False)
+        self.procedure_loader.run(name)
 
 
 if __name__ == '__main__':
