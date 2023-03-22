@@ -1,4 +1,5 @@
 from typing import Any, Optional
+from pathlib import Path
 
 import inquirer
 
@@ -53,7 +54,7 @@ class Prompt:
         return cls._convert_to_inquirer('editor', **kwargs)
 
     @classmethod
-    def path(cls, message: str, **kwargs) -> Optional[str]:
+    def path(cls, message: str, **kwargs) -> Optional[Path]:
         """
         Ask the user to input a path.
         
@@ -63,8 +64,13 @@ class Prompt:
         :return: The user's response.
         """
 
+        if 'default' in kwargs and kwargs['default']:
+            kwargs['default'] = str(Path(kwargs['default']).resolve())
+
         kwargs = {'message': message, **kwargs}
-        return cls._convert_to_inquirer('path', **kwargs)
+        response = cls._convert_to_inquirer('path', **kwargs)
+
+        return Path(response) if response else None
 
     @classmethod
     def password(cls, message: str, **kwargs) -> Optional[str]:
