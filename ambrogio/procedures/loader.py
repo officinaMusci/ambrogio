@@ -116,7 +116,7 @@ class ProcedureLoader:
         except KeyError:
             raise KeyError(f"Procedure not found: {procedure_name}")
 
-    def run(self, procedure_name: str, cli: bool = False) -> ProcedureType:
+    def run(self, procedure_name: str) -> ProcedureType:
         """
         Run the Procedure execute method for the given procedure name.
         If the procedure name is not found, raise a KeyError.
@@ -128,12 +128,7 @@ class ProcedureLoader:
         :return: The Procedure instance.
         """
 
-        procedure: ProcedureType = self.load(procedure_name)
-
-        if cli:
-            procedure._prompt_params()
-        
-        procedure = procedure(self.config)
+        procedure: ProcedureType = self.load(procedure_name)(self.config)
         procedure._execute()
 
         return procedure

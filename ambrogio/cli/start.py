@@ -49,7 +49,8 @@ def start():
 
         else:
             procedure = procedure_loader.load(procedure_name)
-            procedure = procedure()
+            procedure._prompt_params()
+            procedure = procedure(config)
 
             dashboard = Dashboard(procedure)
 
