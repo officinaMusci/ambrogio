@@ -1,7 +1,12 @@
 from dataclasses import dataclass
-from typing import Union, Optional, Any
+from typing import TypeVar, Union, Optional, Any
+from pathlib import Path
 
 from ambrogio.cli.prompt import Prompt
+
+
+types = (bool, int, float, str, Path)
+ProcedureParamType = TypeVar('ProcedureParamType', *types)
 
 
 @dataclass
@@ -11,14 +16,14 @@ class ProcedureParam:
     """
 
     name: str
-    type: Union[bool, int, float, str]
-    value: Optional[Any] = None
-    required: bool = False
+    type: ProcedureParamType
+    value: Optional[ProcedureParamType] = None
+    required: bool = True
 
     def __post_init__(self):
-        if self.type not in (bool, int, float, str):
+        if self.type not in types:
             raise TypeError(
-                f"Parameter {self.name} must be of type bool, int, float or str"
+                f"Parameter {self.name} must be of type {', '.join(types)}"
             )
 
         if self.value != None and not self._check_type(self.value, self.type):
@@ -32,24 +37,30 @@ class ProcedureParam:
         """
         
         if self.type == bool:
-            self._value = Prompt.confirm(
-                f"Enter value for {self.name}",
-                default=self.value
+            self.value = Prompt.confirm(
+                f"Set {self.name} to True?",
+                default = self.value
+            )
+
+        elif self.type == Path:
+            self.value = Prompt.path(
+                f"Enter a path for {self.name}",
+                default = self.value
             )
 
         else:
-            while not value or not self._check_type(value):
-                value = Prompt.text(
-                    f"Enter value for {self.name}",
-                    default=self.value
-                )
+            value = Prompt.text(
+                f"Enter value for {self.name} ({self.type.__name__})",
+                default = self.value,
+                validate = lambda _, x: self._check_type(x, self.type)
+            )
 
             self.value = self.type(value)
             
     def _check_type(
         self,
         value: Any,
-        type_: Optional[Union[bool, int, float, str]] = None
+        type_: Optional[ProcedureParamType] = None
     ) -> bool:
         """
         Check whether the given value is of the correct type.
@@ -57,7 +68,7 @@ class ProcedureParam:
 
         type_ = type_ or self.type
 
-        return type_ in (bool, int, float, str) and isinstance(value, type_)
+        return type_ in (bool, int, float, str, Path) and isinstance(value, type_)
 
     def __repr__(self):
         return f"<ProcedureParam {self.name} ({self.type.__name__})>"
