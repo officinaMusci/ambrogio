@@ -104,7 +104,7 @@ class StepProcedure(Procedure):
 
         logging.info(f'Executing "{self.name}" procedure...')
 
-        self.setUp()
+        self.set_up()
 
         if not self.total_steps:
             raise ValueError('No steps added to the procedure')
@@ -134,11 +134,11 @@ class StepProcedure(Procedure):
         
             self._finished = True
 
-            self.tearDown()
+            self.tear_down()
 
             logging.info(f'Procedure "{self.name}" executed successfully')
 
-    def setUp(self):
+    def set_up(self):
         """
         Method called before the execution of the procedure.
         Procedure steps can be added here.
@@ -146,7 +146,7 @@ class StepProcedure(Procedure):
 
         pass
 
-    def tearDown(self):
+    def tear_down(self):
         """
         Method called after the execution of the procedure.
         """
