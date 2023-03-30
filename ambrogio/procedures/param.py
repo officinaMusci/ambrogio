@@ -45,18 +45,34 @@ class ProcedureParam:
         elif self.type == Path:
             self.value = Prompt.path(
                 f"Enter a path for {self.name}",
-                default = self.value
+                default = self.value,
+                validate = lambda _, x: self._check_conversion(x)
             )
 
         else:
             value = Prompt.text(
                 f"Enter value for {self.name} ({self.type.__name__})",
                 default = self.value,
-                validate = lambda _, x: self._check_type(x, self.type)
+                validate = lambda _, x: (
+                    self._check_type(x, self.type)
+                    or self._check_conversion(x)
+                )
             )
 
             self.value = self.type(value)
             
+    def _check_conversion(self, value: Any) -> bool:
+        """
+        Check whether the given value can be converted to the correct type.
+        """
+
+        try:
+            self.type(value)
+        except ValueError:
+            return False
+
+        return True
+
     def _check_type(
         self,
         value: Any,
