@@ -139,5 +139,6 @@ class Prompt:
         result = inquirer.prompt(questions)
 
         pause_event.clear()
+        sleep(1/2)
 
         return result['answer'] if result else None

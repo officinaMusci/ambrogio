@@ -6,7 +6,7 @@ from rich.panel import Panel
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 
 from ambrogio.procedures import Procedure
-from ambrogio.utils.threading import exit_event, check_events
+from ambrogio.utils.threading import exit_event, wait_resume
 
 
 class StepProcedure(Procedure):
@@ -124,12 +124,14 @@ class StepProcedure(Procedure):
 
             else:
                 self._join_parallel_steps()
-                
-                if check_events():
+
+                wait_resume()
+                if not exit_event.is_set():
                     logging.debug(f'Executing step "{step["name"]}"...')
                     self._execute_step(step)
 
-        if check_events():
+        wait_resume()
+        if not exit_event.is_set():
             self._join_parallel_steps()
         
             self._finished = True
