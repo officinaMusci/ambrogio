@@ -16,7 +16,7 @@ class $classname(StepProcedure):
     def forth_step(self):
         pass
 
-    def setUp(self):
+    def set_up(self):
         self.add_step(self.first_step)
         self.add_step(self.second_step, parallel=True)
         self.add_step(self.third_step, parallel=True)
