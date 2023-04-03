@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TypeVar, Union, Optional, Any
+from typing import TypeVar, Optional, Any
 from pathlib import Path
 
 from ambrogio.cli.prompt import Prompt
