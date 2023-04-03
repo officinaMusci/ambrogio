@@ -1,10 +1,53 @@
+import sys
 from typing import Any, Optional
 from pathlib import Path
 from time import sleep
+import logging
 
 import inquirer
+from inquirer.themes import Theme, term
 
-from ambrogio.utils.threading import pause_event
+from ambrogio.utils.threading import pause_event, exit_event
+
+
+def ask_for_interrupt(*args):
+    """
+    On KeyboardInterrupt, ask the user to confirm interrupting the program.
+    """
+
+    confirm = Prompt.confirm(
+        'Are you sure you want to interrupt the program?',
+        default=True
+    )
+
+    if confirm:
+        exit_event.set()
+
+        logging.warning('Interrupting program...')
+        
+        sys.exit(0)
+    
+    else:
+        return False
+
+
+class PromptTheme(Theme):
+    def __init__(self):
+        super().__init__()
+        self.Question.mark_color = term.normal + term.bold
+        self.Question.brackets_color = term.normal
+        self.Question.default_color = term.normal
+        self.Editor.opening_prompt_color = term.normal
+        self.Checkbox.selection_color = term.normal + term.bold
+        self.Checkbox.selection_icon = ">"
+        self.Checkbox.selected_icon = "[X]"
+        self.Checkbox.selected_color = term.normal + term.bold
+        self.Checkbox.unselected_color = term.normal
+        self.Checkbox.unselected_icon = "[ ]"
+        self.Checkbox.locked_option_color = term.gray50
+        self.List.selection_color = term.normal + term.bold
+        self.List.selection_cursor = ">"
+        self.List.unselected_color = term.normal
 
 
 class Prompt:
@@ -136,7 +179,12 @@ class Prompt:
             getattr(inquirer, method.capitalize())('answer', **kwargs)
         ]
 
-        result = inquirer.prompt(questions)
+        try:
+            result = inquirer.prompt(questions, theme = PromptTheme())
+        
+        except KeyboardInterrupt:
+            if not ask_for_interrupt():
+                result = inquirer.prompt(questions, theme = PromptTheme())
 
         pause_event.clear()
         sleep(1/2)
