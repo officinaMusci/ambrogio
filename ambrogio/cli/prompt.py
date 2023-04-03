@@ -1,5 +1,6 @@
 from typing import Any, Optional
 from pathlib import Path
+from time import sleep
 
 import inquirer
 
@@ -129,6 +130,7 @@ class Prompt:
         """
 
         pause_event.set()
+        sleep(1/2)
 
         questions = [
             getattr(inquirer, method.capitalize())('answer', **kwargs)
