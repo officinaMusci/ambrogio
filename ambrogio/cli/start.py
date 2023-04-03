@@ -1,4 +1,5 @@
 from threading import Thread
+from time import sleep
 
 from ambrogio.cli.prompt import Prompt
 from ambrogio.cli.dashboard import Dashboard
@@ -62,6 +63,7 @@ def start():
             
             except Exception as e:
                 exit_event.set()
+                sleep(1)
                 raise e
 
             show_dashboard_thread.join()
