@@ -81,7 +81,7 @@ class StepProcedure(Procedure):
         """
 
         progress = Progress(
-            TextColumn("[progress.description]{task.description}"),
+            TextColumn('[progress.description]{task.description}'),
             BarColumn(),
             TaskProgressColumn(),
             expand=True,
@@ -102,7 +102,7 @@ class StepProcedure(Procedure):
         Execute the procedure.
         """
 
-        self.logger.info(f'Executing "{self.name}" procedure...')
+        self.logger.info(f"Executing '{self.name}' procedure...")
 
         self.set_up()
 
@@ -118,7 +118,7 @@ class StepProcedure(Procedure):
                     args=(step,)
                 )
                 
-                self.logger.debug(f'Starting parallel step "{step["name"]}"...')
+                self.logger.debug(f"Starting parallel step '{step['name']}'...")
                 parallel_step.start()
                 self._parallel_steps.append(parallel_step)
 
@@ -127,7 +127,6 @@ class StepProcedure(Procedure):
 
                 wait_resume()
                 if not exit_event.is_set():
-                    self.logger.debug(f'Executing step "{step["name"]}"...')
                     self._execute_step(step)
 
         wait_resume()
@@ -138,7 +137,7 @@ class StepProcedure(Procedure):
 
             self.tear_down()
 
-            self.logger.info(f'Procedure "{self.name}" executed successfully')
+            self.logger.info(f"Procedure '{self.name}' executed successfully")
 
     def set_up(self):
         """
@@ -177,10 +176,10 @@ class StepProcedure(Procedure):
         :raises ValueError: If the function is not callable.
         """
 
-        self.logger.debug(f'Adding step "{name}" to procedure "{self.name}"')
-
         if name is None:
             name = function.__name__
+
+        self.logger.debug(f"Adding step '{name}' to procedure '{self.name}'")
 
         self._steps.append({
             'function': function,
@@ -203,12 +202,16 @@ class StepProcedure(Procedure):
         :raises Exception: If the step raises an exception.
         """
 
+        self.logger.debug(f"Executing step '{step['name']}'...")
+
         try:
             step['function'](*step['args'], **step['kwargs'])
             self._completed_steps += 1
 
+            self.logger.debug(f"Step '{step['name']}' executed successfully")
+
         except Exception as e:
-            self.logger.error(f'Step "{step["name"]}" raised an exception: {e}')
+            self.logger.error(f"Step '{step['name']}' raised an exception: {e}")
             self._failed_steps += 1
 
             if step['blocking']:
