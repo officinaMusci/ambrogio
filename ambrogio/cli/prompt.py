@@ -2,11 +2,11 @@ import sys
 from typing import Any, Optional
 from pathlib import Path
 from time import sleep
-import logging
 
 import inquirer
 from inquirer.themes import Theme, term
 
+from ambrogio.cli.logger import logger
 from ambrogio.utils.threading import pause_event, exit_event
 
 
@@ -23,7 +23,7 @@ def ask_for_interrupt(*args):
     if confirm:
         exit_event.set()
 
-        logging.warning('Interrupting program...')
+        logger.warning('Interrupting program...')
         
         sys.exit(0)
     

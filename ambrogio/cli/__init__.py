@@ -1,26 +1,11 @@
 import os
 from pathlib import Path
 import signal
-import logging
-
-from rich.logging import RichHandler
-from rich import traceback
 
 from ambrogio.cli.start import start
 from ambrogio.cli.prompt import Prompt, ask_for_interrupt
 from ambrogio.environment import get_closest_ini
 from ambrogio.utils.project import create_project
-
-
-FORMAT = "%(message)s"
-logging.basicConfig(
-    level="NOTSET",
-    format=FORMAT,
-    datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks = True)]
-)
-
-traceback.install(show_locals = True)
 
 
 available_commands = {
