@@ -50,7 +50,17 @@ def start():
 
         else:
             procedure = procedure_loader.load(procedure_name)
-            procedure._prompt_params()
+
+            procedure_needs_params = (
+                procedure._check_params(False)
+                or Prompt.confirm(
+                    'Do you want to set the procedure parameters?'
+                )
+            )
+            
+            if procedure_needs_params:
+                procedure._prompt_params()
+            
             procedure = procedure(config)
 
             dashboard = Dashboard(procedure)
