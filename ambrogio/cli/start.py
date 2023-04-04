@@ -51,12 +51,11 @@ def start():
         else:
             procedure = procedure_loader.load(procedure_name)
 
-            procedure_needs_params = (
-                procedure._check_params(False)
-                or Prompt.confirm(
-                    'Do you want to set the procedure parameters?'
+            procedure_needs_params = procedure._check_params(False)
+            if not procedure_needs_params:
+                procedure_needs_params = Prompt.confirm(
+                    'Do you want to change the default parameters?'
                 )
-            )
             
             if procedure_needs_params:
                 procedure._prompt_params()
