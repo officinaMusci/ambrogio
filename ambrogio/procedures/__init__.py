@@ -1,10 +1,12 @@
 from typing import Optional, List
 from configparser import ConfigParser
+import logging
 
 from rich.panel import Panel
 
 from ambrogio.environment import get_closest_ini
 from ambrogio.procedures.param import ProcedureParam
+from ambrogio.cli.prompt import Prompt
 
 
 class Procedure:
@@ -18,11 +20,16 @@ class Procedure:
 
     config: Optional[ConfigParser] = None
 
+    logger: logging.Logger
+    prompt: Prompt = Prompt()
+
     _finished: bool = False
 
     def __init__(self, config: Optional[ConfigParser] = None):
         if not getattr(self, 'name', None):
             raise ValueError(f"{type(self).__name__} must have a name")
+        
+        self.logger = logging.getLogger(self.name)
         
         self._check_params()
         

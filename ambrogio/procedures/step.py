@@ -102,7 +102,7 @@ class StepProcedure(Procedure):
         Execute the procedure.
         """
 
-        logging.info(f'Executing "{self.name}" procedure...')
+        self.logger.info(f'Executing "{self.name}" procedure...')
 
         self.set_up()
 
@@ -118,7 +118,7 @@ class StepProcedure(Procedure):
                     args=(step,)
                 )
                 
-                logging.debug(f'Starting parallel step "{step["name"]}"...')
+                self.logger.debug(f'Starting parallel step "{step["name"]}"...')
                 parallel_step.start()
                 self._parallel_steps.append(parallel_step)
 
@@ -127,7 +127,7 @@ class StepProcedure(Procedure):
 
                 wait_resume()
                 if not exit_event.is_set():
-                    logging.debug(f'Executing step "{step["name"]}"...')
+                    self.logger.debug(f'Executing step "{step["name"]}"...')
                     self._execute_step(step)
 
         wait_resume()
@@ -138,7 +138,7 @@ class StepProcedure(Procedure):
 
             self.tear_down()
 
-            logging.info(f'Procedure "{self.name}" executed successfully')
+            self.logger.info(f'Procedure "{self.name}" executed successfully')
 
     def set_up(self):
         """
@@ -177,7 +177,7 @@ class StepProcedure(Procedure):
         :raises ValueError: If the function is not callable.
         """
 
-        logging.debug(f'Adding step "{name}" to procedure "{self.name}"')
+        self.logger.debug(f'Adding step "{name}" to procedure "{self.name}"')
 
         if name is None:
             name = function.__name__
@@ -208,11 +208,11 @@ class StepProcedure(Procedure):
             self._completed_steps += 1
 
         except Exception as e:
-            logging.error(f'Step "{step["name"]}" raised an exception: {e}')
+            self.logger.error(f'Step "{step["name"]}" raised an exception: {e}')
             self._failed_steps += 1
 
             if step['blocking']:
-                logging.error('Stopping procedure execution')
+                self.logger.error('Stopping procedure execution')
                 exit_event.set()
                 raise e
 
@@ -221,7 +221,7 @@ class StepProcedure(Procedure):
         Join the parallel steps.
         """
 
-        logging.debug('Joining parallel steps...')
+        self.logger.debug('Joining parallel steps...')
 
         for step in self._parallel_steps:
             if step.is_alive():
