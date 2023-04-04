@@ -80,25 +80,44 @@ class Procedure:
             param.from_prompt()
 
     @classmethod
-    def _check_params(cls):
+    def _check_params(cls, raise_error: bool = True) -> bool:
         """
-        Check whether all parameters have been set.
+        Check if all parameters are valid.
         """
 
         for param in cls.params:
-            if param.required and param.value is None:
-                raise ValueError(
-                    f"Parameter {param.name} is required but has not been set"
-                )
-            
-            if param.value and not param._check_type(param.value):
-                raise TypeError(
-                    f"Parameter {param.name} must be of type {param.type.__name__}"
-                )
-            
-        param_names = [param.name for param in cls.params]
+            name = param.name
+            type_name = param.type.__name__
 
-        if len(param_names) != len(set(param_names)):
-            raise ValueError(
-                    f"Parameter {param.name} is defined more than once"
-            )
+            # Check if the parameter is required but has not been set
+            if param.required and param.value is None:
+                if raise_error:
+                    raise ValueError(
+                        f"Parameter {name} is required but has not been set"
+                    )
+                
+                return False
+            
+            # Check if the parameter has a value but is not of the correct type
+            if param.value and not param._check_type(param.value):
+                if raise_error:
+                    raise TypeError(
+                        f"Parameter {name} must be of type {type_name}"
+                    )
+                
+                return False
+            
+            # Check if the parameter has been defined more than once
+            for other_param in cls.params:
+                if other_param is param:
+                    continue
+                
+                if other_param.name == name:
+                    if raise_error:
+                        raise ValueError(
+                            f"Parameter {name} is defined more than once"
+                        )
+                    
+                    return False
+        
+        return True
