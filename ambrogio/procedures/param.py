@@ -54,8 +54,11 @@ class ProcedureParam:
                 f"Enter value for {self.name} ({self.type.__name__})",
                 default = self.value,
                 validate = lambda _, x: (
-                    self._check_type(x, self.type)
-                    or self._check_conversion(x)
+                    (not self.required or x != '')
+                    and (
+                        self._check_type(x, self.type)
+                        or self._check_conversion(x)
+                    )
                 )
             )
 
