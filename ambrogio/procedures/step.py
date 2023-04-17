@@ -160,8 +160,7 @@ class StepProcedure(Procedure):
         name: Optional[str] = None,
         parallel: bool = False,
         blocking: bool = True,
-        *args,
-        **kwargs
+        params: Optional[dict] = None,
     ):
         """
         Add a step to the procedure.
@@ -170,8 +169,7 @@ class StepProcedure(Procedure):
         :param name: The name of the step.
         :param parallel: If the step can be executed in a separate thread.
         :param blocking: If the step can block the execution of the procedure.
-        :param args: The arguments to pass to the function.
-        :param kwargs: The keyword arguments to pass to the function.
+        :param params: The parameters to be passed to the function.
 
         :raises ValueError: If the function is not callable.
         """
@@ -186,8 +184,7 @@ class StepProcedure(Procedure):
             'name': name,
             'parallel': parallel,
             'blocking': blocking,
-            'args': args,
-            'kwargs': kwargs
+            'params': params or {}
         })
 
     def _execute_step(self, step: dict):
@@ -205,7 +202,7 @@ class StepProcedure(Procedure):
         self.logger.debug(f"Executing step '{step['name']}'...")
 
         try:
-            step['function'](*step['args'], **step['kwargs'])
+            step['function'](**step['params'])
             self._completed_steps += 1
 
             self.logger.debug(f"Step '{step['name']}' executed successfully")
