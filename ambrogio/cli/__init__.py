@@ -1,52 +1,12 @@
-import sys
+import os
+from pathlib import Path
 import signal
-import logging
 
 from ambrogio.cli.start import start
-from ambrogio.cli.prompt import Prompt
-from ambrogio.utils.project import create_project, create_procedure
-from ambrogio.utils.threading import exit_event
-
-from rich.logging import RichHandler
-from rich import traceback
-
-
-FORMAT = "%(message)s"
-logging.basicConfig(
-    level="NOTSET",
-    format=FORMAT,
-    datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks = True)]
-)
-
-traceback.install(show_locals = True)
-
-
-def _interrupt_handler(*args):
-    """
-    On KeyboardInterrupt, ask the user to confirm interrupting the program.
-    """
-
-    confirm = Prompt.confirm(
-        'Are you sure you want to interrupt the program?',
-        default=True
-    )
-
-    if confirm:
-        exit_event.set()
-
-        print('Interrupting program...')
-        
-        sys.exit(0)
-
-
-def _pop_command_name(argv):
-    i = 0
-    for arg in argv[1:]:
-        if not arg.startswith('-'):
-            del argv[i]
-            return arg
-        i += 1
+from ambrogio.cli.prompt import Prompt, ask_for_interrupt
+from ambrogio.environment import get_closest_ini
+from ambrogio.utils.project import create_project
+from ambrogio.utils.threading import pause_event
 
 
 available_commands = {
@@ -56,47 +16,40 @@ available_commands = {
 }
 
 
-def execute(argv = None):
+def signal_handler(signal, frame):
+    """
+    Handle SIGINT signal.
+    It won't be handled if the pause_event is set, so the Prompt will be
+    able to handle it.
+    """
+
+    if not pause_event.is_set():
+        ask_for_interrupt()
+
+    else:
+        raise KeyboardInterrupt
+
+
+def execute():
     """
     Run Ambrogio via command-line interface.
     """
     
-    signal.signal(signal.SIGINT, _interrupt_handler)
+    signal.signal(signal.SIGINT, signal_handler)
 
-    if argv is None:
-        argv = sys.argv
+    if not get_closest_ini('.'):
+        create = Prompt.confirm('No Ambrogio project found. Do you want to create one?')
 
-    command_name = _pop_command_name(argv)
+        if create:
+            project_name = Prompt.text('Type the project name')
+            
+            if project_name:
+                create_project(project_name)
 
-    # Create a new project
-    if command_name == 'init':
-        project_name = Prompt.text('Type the project name')
-        if project_name:
-            create_project(project_name)
+                project_path: Path = Path('.') / project_name
+                os.chdir(project_path.resolve())
 
-    # Create a new procedure
-    if command_name == 'create':
-        procedure_name = Prompt.text('Type the procedure name')
-        procedure_type = Prompt.list('Select the procedure type', [
-            ('Basic procedure', 'basic'),
-            ('Step procedure', 'step')
-        ])
+                start()
 
-        if procedure_name and procedure_type:
-            create_procedure(procedure_name, procedure_type)
-
-    # Start the project
-    elif command_name == 'start':
-        start()
-
-    elif not command_name:
-        print("Usage:")
-        print("  ambrogio <command>\n")
-        print("Available commands:")
-
-        for name, description in available_commands.items():
-            print(f"  {name:<13} {description}")
-    
     else:
-        print(f"Unknown command: {command_name}\n")
-        print('Use \"ambrogio\" to see available commands')
+        start()

@@ -3,11 +3,10 @@ from threading import Thread
 import logging
 
 from rich.panel import Panel
-from rich.table import Column
 from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn
 
 from ambrogio.procedures import Procedure
-from ambrogio.utils.threading import exit_event
+from ambrogio.utils.threading import exit_event, wait_resume
 
 
 class StepProcedure(Procedure):
@@ -19,6 +18,7 @@ class StepProcedure(Procedure):
     _parallel_steps: List[Thread] = []
     _current_step: int = 0
     _completed_steps: int = 0
+    _failed_steps: int = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,6 +63,16 @@ class StepProcedure(Procedure):
         return self._completed_steps
 
     @property
+    def failed_steps(self) -> int:
+        """
+        The number of failed steps.
+
+        :return: The number of failed steps.
+        """
+
+        return self._failed_steps
+
+    @property
     def _dashboard_widgets(self) -> List[Panel]:
         """
         Additional widgets to be added to Ambrogio dashboard.
@@ -71,7 +81,7 @@ class StepProcedure(Procedure):
         """
 
         progress = Progress(
-            TextColumn("[progress.description]{task.description}"),
+            TextColumn('[progress.description]{task.description}'),
             BarColumn(),
             TaskProgressColumn(),
             expand=True,
@@ -92,9 +102,9 @@ class StepProcedure(Procedure):
         Execute the procedure.
         """
 
-        logging.info(f'Executing "{self.name}" procedure...')
+        self.logger.info(f"Executing '{self.name}' procedure...")
 
-        self.setUp()
+        self.set_up()
 
         if not self.total_steps:
             raise ValueError('No steps added to the procedure')
@@ -108,28 +118,28 @@ class StepProcedure(Procedure):
                     args=(step,)
                 )
                 
-                logging.debug(f'Starting parallel step "{step["name"]}"...')
+                self.logger.debug(f"Starting parallel step '{step['name']}'...")
                 parallel_step.start()
                 self._parallel_steps.append(parallel_step)
 
             else:
                 self._join_parallel_steps()
 
-                logging.debug(f'Executing step "{step["name"]}"...')
-                self._execute_step(step)
+                wait_resume()
+                if not exit_event.is_set():
+                    self._execute_step(step)
 
-            if exit_event.is_set():
-                break
-
-        self._join_parallel_steps()
+        wait_resume()
+        if not exit_event.is_set():
+            self._join_parallel_steps()
         
-        self._finished = True
+            self._finished = True
 
-        self.tearDown()
+            self.tear_down()
 
-        logging.info(f'Procedure "{self.name}" executed successfully')
+            self.logger.info(f"Procedure '{self.name}' executed successfully")
 
-    def setUp(self):
+    def set_up(self):
         """
         Method called before the execution of the procedure.
         Procedure steps can be added here.
@@ -137,7 +147,7 @@ class StepProcedure(Procedure):
 
         pass
 
-    def tearDown(self):
+    def tear_down(self):
         """
         Method called after the execution of the procedure.
         """
@@ -150,8 +160,7 @@ class StepProcedure(Procedure):
         name: Optional[str] = None,
         parallel: bool = False,
         blocking: bool = True,
-        *args,
-        **kwargs
+        params: Optional[dict] = None,
     ):
         """
         Add a step to the procedure.
@@ -160,24 +169,22 @@ class StepProcedure(Procedure):
         :param name: The name of the step.
         :param parallel: If the step can be executed in a separate thread.
         :param blocking: If the step can block the execution of the procedure.
-        :param args: The arguments to pass to the function.
-        :param kwargs: The keyword arguments to pass to the function.
+        :param params: The parameters to be passed to the function.
 
         :raises ValueError: If the function is not callable.
         """
 
-        logging.debug(f'Adding step "{name}" to procedure "{self.name}"')
-
         if name is None:
             name = function.__name__
+
+        self.logger.debug(f"Adding step '{name}' to procedure '{self.name}'")
 
         self._steps.append({
             'function': function,
             'name': name,
             'parallel': parallel,
             'blocking': blocking,
-            'args': args,
-            'kwargs': kwargs
+            'params': params or {}
         })
 
     def _execute_step(self, step: dict):
@@ -192,26 +199,29 @@ class StepProcedure(Procedure):
         :raises Exception: If the step raises an exception.
         """
 
+        self.logger.debug(f"Executing step '{step['name']}'...")
+
         try:
-            step['function'](*step['args'], **step['kwargs'])
+            step['function'](**step['params'])
             self._completed_steps += 1
 
+            self.logger.debug(f"Step '{step['name']}' executed successfully")
+
         except Exception as e:
-            logging.error(f'Step "{step["name"]}" raised an exception: {e}')
+            self.logger.error(f"Step '{step['name']}' raised an exception: {e}")
+            self._failed_steps += 1
 
             if step['blocking']:
-                logging.error('Stopping procedure execution')
+                self.logger.error('Stopping procedure execution')
                 exit_event.set()
                 raise e
-
-            raise e
 
     def _join_parallel_steps(self):
         """
         Join the parallel steps.
         """
 
-        logging.debug('Joining parallel steps...')
+        self.logger.debug('Joining parallel steps...')
 
         for step in self._parallel_steps:
             if step.is_alive():

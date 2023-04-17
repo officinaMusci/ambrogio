@@ -17,12 +17,12 @@ class BasicProcedure(Procedure):
         Execute the procedure.
         """
 
-        logging.info(f'Executing "{self.name}" procedure...')
+        self.logger.info(f'Executing "{self.name}" procedure...')
 
         result = self.execute()
         self._finished = True
         
-        logging.info(f'Procedure "{self.name}" executed successfully')
+        self.logger.info(f'Procedure "{self.name}" executed successfully')
 
         return result
 

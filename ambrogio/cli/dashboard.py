@@ -10,7 +10,7 @@ from rich.live import Live
 from ambrogio.procedures import Procedure
 from ambrogio.utils.memory import format_bytes
 from ambrogio.utils.time import Timer
-from ambrogio.utils.threading import check_events
+from ambrogio.utils.threading import pause_event, wait_resume, check_events
 
 
 class Dashboard():
@@ -30,6 +30,9 @@ class Dashboard():
     _timer: Timer
 
     def __init__(self, procedure: Procedure):
+        self._process = psutil.Process(os.getpid())
+        self._timer = Timer()
+
         self._procedure = procedure
 
     @property
@@ -44,16 +47,17 @@ class Dashboard():
         """
         Show the dashboard.
         """
-        
-        self._process = psutil.Process(os.getpid())
-        self._timer = Timer()
 
-        with Live(self._generate_dashboard(), refresh_per_second=4) as live:
+        with Live(self._generate_dashboard(), refresh_per_second = 4) as live:
             while not self.procedure.finished and check_events():
                 live.update(self._generate_dashboard())
                 sleep(1/4)
             
             live.update(self._generate_dashboard())
+        
+        if pause_event.is_set():
+            wait_resume()
+            self.show()
 
     def _get_performances(self):
         """
@@ -82,22 +86,22 @@ class Dashboard():
                 self.max_performances[key] = value
                 
         performance_table = Table(
-            show_header=True,
-            header_style='bold',
-            expand=True
+            show_header = True,
+            header_style = 'bold',
+            expand = True
         )
         
-        performance_table.add_column('Elapsed time', justify='right')
-        performance_table.add_column('Memory', justify='right')
-        performance_table.add_column('CPU', justify='right', min_width=10)
-        performance_table.add_column('Threads', justify='right')
+        performance_table.add_column('Elapsed time', justify = 'right')
+        performance_table.add_column('Memory', justify = 'right')
+        performance_table.add_column('CPU', justify = 'right', min_width = 10)
+        performance_table.add_column('Threads', justify = 'right')
 
         performance_table.add_row(
             self._timer.elapsed_time,
             format_bytes(performances['memory']),
             f"{performances['cpu']:.2f} %",
             f"{performances['threads']}",
-            end_section=True
+            end_section = True
         )
 
         performance_table.add_row(
@@ -110,6 +114,6 @@ class Dashboard():
         columns = Columns([
             Panel(performance_table, title='Performances'),
             *self.procedure._dashboard_widgets
-        ], expand=True)
+        ], expand = True)
 
         return columns

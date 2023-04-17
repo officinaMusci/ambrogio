@@ -1,12 +1,17 @@
 import os
 from types import ModuleType
-from typing import List, Callable, Generator, Union
+from typing import TypeVar, List, Type, Generator, Union
 import inspect
 from importlib import import_module
 from pkgutil import iter_modules
 from configparser import ConfigParser
 
 from ambrogio.procedures import Procedure
+from ambrogio.procedures.basic import BasicProcedure
+from ambrogio.procedures.step import StepProcedure
+
+
+ProcedureType = TypeVar('ProcedureType', BasicProcedure, StepProcedure)
 
 
 def walk_modules(path: str) -> List[ModuleType]:
@@ -93,7 +98,7 @@ class ProcedureLoader:
 
         return list(self._procedures.keys())
 
-    def load(self, procedure_name: str) -> Callable[[], Procedure]:
+    def load(self, procedure_name: str) -> Type[ProcedureType]:
         """
         Return the Procedure class for the given procedure name.
         If the procedure name is not found, raise a KeyError.
@@ -111,7 +116,7 @@ class ProcedureLoader:
         except KeyError:
             raise KeyError(f"Procedure not found: {procedure_name}")
 
-    def run(self, procedure_name: str):
+    def run(self, procedure_name: str) -> ProcedureType:
         """
         Run the Procedure execute method for the given procedure name.
         If the procedure name is not found, raise a KeyError.
@@ -120,16 +125,18 @@ class ProcedureLoader:
 
         :raises KeyError: If the procedure name is not found.
 
-        :return: The Procedure class.
+        :return: The Procedure instance.
         """
 
-        procedure: Procedure = self.load(procedure_name)(self._project_path)
+        procedure: ProcedureType = self.load(procedure_name)(self.config)
         procedure._execute()
+
+        return procedure
 
     @staticmethod
     def iter_procedure_classes(
         module: ModuleType
-    ) -> Generator[Callable[[], Procedure], None, None]:
+    ) -> Generator[Type[Procedure], None, None]:
         """
         Return an iterator over all procedure classes defined in the given
         module that can be instantiated (i.e. which have name)
