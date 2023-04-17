@@ -38,20 +38,20 @@ class ProcedureParam:
         
         if self.type == bool:
             self.value = Prompt.confirm(
-                f"Set {self.name} to True?",
+                f"Set '{self.name}' to True?",
                 default = self.value
             )
 
         elif self.type == Path:
             self.value = Prompt.path(
-                f"Enter a path for {self.name}",
+                f"Enter a path for '{self.name}'",
                 default = self.value,
                 validate = lambda _, x: self._check_conversion(x)
             )
 
         else:
             value = Prompt.text(
-                f"Enter value for {self.name} ({self.type.__name__})",
+                f"Enter the value for '{self.name}' ({self.type.__name__})",
                 default = self.value,
                 validate = lambda _, x: (
                     (not self.required or x != '')
