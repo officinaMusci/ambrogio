@@ -10,7 +10,7 @@ from ambrogio.cli.logger import logger
 from ambrogio.utils.threading import pause_event, exit_event
 
 
-def ask_for_interrupt(*args):
+def ask_for_interrupt():
     """
     On KeyboardInterrupt, ask the user to confirm interrupting the program.
     """
@@ -180,11 +180,15 @@ class Prompt:
         ]
 
         try:
-            result = inquirer.prompt(questions, theme = PromptTheme())
+            result = inquirer.prompt(
+                questions,
+                theme = PromptTheme(),
+                raise_keyboard_interrupt = True
+            )
         
         except KeyboardInterrupt:
             if not ask_for_interrupt():
-                result = inquirer.prompt(questions, theme = PromptTheme())
+                result = Prompt._convert_to_inquirer(method, **kwargs)
 
         pause_event.clear()
         sleep(1/2)
