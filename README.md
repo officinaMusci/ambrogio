@@ -82,8 +82,8 @@ class MyStepProcedure(StepProcedure):
     name = 'My Step Procedure'
 
 
-    def step_1(self):
-        print('Step 1')
+    def step_1(self, name: str):
+        print(f'Hello {name}!')
 
     def step_2(self):
         print('Step 2')
@@ -99,7 +99,7 @@ class MyStepProcedure(StepProcedure):
 
 
     def set_up(self):
-        self.add_step(self.step_1)
+        self.add_step(self.step_1, params = {'name': 'World'})
         self.add_step(self.step_2, parallel = True)
         self.add_step(self.step_3, parallel = True)
         self.add_step(self.step_4, parallel = True)
