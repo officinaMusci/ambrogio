@@ -157,11 +157,13 @@ class MyProcedure(BasicProcedure):
             print(f'Hello {name}!')
 ```
 
+The value set for the parameters will be used as default value.
+
 When you run this procedure, you will be prompted to enter the values of the parameters:
 
 ```
 Enter the value for 'name' (str): World
-Enter the value for 'times' (int): 3
+Enter the value for 'times' (int): 1
 ```
 
 Then the procedure will be able to access the values of the parameters:
@@ -178,6 +180,20 @@ Parameters can be of the following types:
 - `float`
 - `str`
 - `Path`(from `pathlib`)
+
+By default, parameters are required. You can make a parameter optional by setting the `required` property to `False`:
+
+```python
+params = [
+    ProcedureParam(
+        name = 'name',
+        type = str,
+        required = False
+    ),
+]
+```
+
+In this case, the proceure won't raise an error if the user doesn't enter a value for the parameter.
 
 ## Procedure prompt and log
 
