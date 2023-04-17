@@ -54,18 +54,18 @@ class TestStepProcedure(AmbrogioTestCase):
         procedure: StepProcedure = self.procedure_loader.load(name)(self.config)
         
         procedure.add_step(self.increment_normals)
-        procedure.add_step(self.check_normals, count = 1)
+        procedure.add_step(self.check_normals, params = {'count': 1})
 
         procedure.add_step(self.raise_error, blocking = False)
-        procedure.add_step(self.check_errors, count = 1)
+        procedure.add_step(self.check_errors, params = {'count': 1})
         
         procedure.add_step(self.increment_parallels, parallel = True)
         procedure.add_step(self.increment_parallels, parallel = True)
         procedure.add_step(self.increment_parallels, parallel = True)
-        procedure.add_step(self.check_parallels, count = 3)
+        procedure.add_step(self.check_parallels, params = {'count': 3})
 
         procedure.add_step(self.increment_normals)
-        procedure.add_step(self.check_normals, count = 2)
+        procedure.add_step(self.check_normals, params = {'count': 2})
 
         procedure.add_step(self.raise_error, blocking = True)
 
