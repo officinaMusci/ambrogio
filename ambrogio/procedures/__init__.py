@@ -78,13 +78,14 @@ class Procedure:
         return None
     
     @classmethod
-    def _prompt_params(cls):
+    def _prompt_params(cls, change_defaults: bool = True):
         """
         Prompt the user to enter values for all parameters.
         """
 
         for param in cls.params:
-            param.from_prompt()
+            if change_defaults or param.value is None:
+                param.from_prompt()
 
     @classmethod
     def _check_params(cls, raise_error: bool = True) -> bool:

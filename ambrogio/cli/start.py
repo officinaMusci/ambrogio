@@ -52,14 +52,11 @@ def start():
             procedure = procedure_loader.load(procedure_name)
 
             if len(procedure.params):
-                procedure_needs_params = not procedure._check_params(False)
-                if not procedure_needs_params:
-                    procedure_needs_params = Prompt.confirm(
-                        'Do you want to change the default parameters?'
-                    )
-                
-                if procedure_needs_params:
-                    procedure._prompt_params()
+                change_defaults = Prompt.confirm(
+                    'Do you want to change the default parameters?'
+                )
+
+                procedure._prompt_params(change_defaults)
             
             procedure = procedure(config)
 
