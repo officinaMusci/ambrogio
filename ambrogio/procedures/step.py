@@ -160,7 +160,7 @@ class StepProcedure(Procedure):
         name: Optional[str] = None,
         parallel: bool = False,
         blocking: bool = True,
-        add_after: Optional[str] = None,
+        add_before: Optional[str] = None,
         params: Optional[dict] = None,
     ):
         """
@@ -170,7 +170,8 @@ class StepProcedure(Procedure):
         :param name: The name of the step.
         :param parallel: If the step can be executed in a separate thread.
         :param blocking: If the step can block the execution of the procedure.
-        :param add_after: The name of the step after which the step will be added.
+        :param add_before: The name of the step before which the new step
+            should be added.
         :param params: The parameters to be passed to the function.
 
         :raises ValueError: If the function is not callable.
@@ -189,16 +190,16 @@ class StepProcedure(Procedure):
             'params': params or {}
         }
 
-        if add_after:
+        if add_before:
             has_been_added = False
             for i, step in enumerate(self._steps):
-                if step['name'] == add_after:
-                    self._steps.insert(i + 1, step)
+                if step['name'] == add_before:
+                    self._steps.insert(i, step)
                     has_been_added = True
                     break
             
             if not has_been_added:
-                raise ValueError(f"Step '{add_after}' not found")
+                raise ValueError(f"Step '{add_before}' not found")
 
         else:
             self._steps.append(step)
