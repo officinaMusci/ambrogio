@@ -122,7 +122,7 @@ As you can see, `set_up` and `step_1` are executed sequentially, then `step_2`, 
 
 When a sequential step follows some parallel steps, the sequential step will be executed after all the previous parallel steps have finished.
 
-If add_step is called during a step execution, the step will be appended to the end of the step list.
+If add_step is called during a step execution, the step will be appended to the end of the step list or right after the step defined in the `add_after` argument.
 
 ## Procedure parameters
 

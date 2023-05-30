@@ -160,6 +160,7 @@ class StepProcedure(Procedure):
         name: Optional[str] = None,
         parallel: bool = False,
         blocking: bool = True,
+        add_after: Optional[str] = None,
         params: Optional[dict] = None,
     ):
         """
@@ -169,6 +170,7 @@ class StepProcedure(Procedure):
         :param name: The name of the step.
         :param parallel: If the step can be executed in a separate thread.
         :param blocking: If the step can block the execution of the procedure.
+        :param add_after: The name of the step after which the step will be added.
         :param params: The parameters to be passed to the function.
 
         :raises ValueError: If the function is not callable.
@@ -179,13 +181,27 @@ class StepProcedure(Procedure):
 
         self.logger.debug(f"Adding step '{name}' to procedure '{self.name}'")
 
-        self._steps.append({
+        step = {
             'function': function,
             'name': name,
             'parallel': parallel,
             'blocking': blocking,
             'params': params or {}
-        })
+        }
+
+        if add_after:
+            has_been_added = False
+            for i, step in enumerate(self._steps):
+                if step['name'] == add_after:
+                    self._steps.insert(i + 1, step)
+                    has_been_added = True
+                    break
+            
+            if not has_been_added:
+                raise ValueError(f"Step '{add_after}' not found")
+
+        else:
+            self._steps.append(step)
 
     def _execute_step(self, step: dict):
         """
