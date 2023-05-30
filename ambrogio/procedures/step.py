@@ -180,9 +180,7 @@ class StepProcedure(Procedure):
         if name is None:
             name = function.__name__
 
-        self.logger.debug(f"Adding step '{name}' to procedure '{self.name}'")
-
-        step = {
+        new_step = {
             'function': function,
             'name': name,
             'parallel': parallel,
@@ -191,10 +189,15 @@ class StepProcedure(Procedure):
         }
 
         if add_before:
+            self.logger.debug(
+                f"Adding step '{name}' before '{add_before}' to procedure "
+                f"'{self.name}'"
+            )
+
             has_been_added = False
             for i, step in enumerate(self._steps):
                 if step['name'] == add_before:
-                    self._steps.insert(i, step)
+                    self._steps.insert(i, new_step)
                     has_been_added = True
                     break
             
@@ -202,7 +205,10 @@ class StepProcedure(Procedure):
                 raise ValueError(f"Step '{add_before}' not found")
 
         else:
-            self._steps.append(step)
+            self.logger.debug(
+                f"Adding step '{name}' to procedure '{self.name}'"
+            )
+            self._steps.append(new_step)
 
     def _execute_step(self, step: dict):
         """
