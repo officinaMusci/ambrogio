@@ -218,6 +218,7 @@ Available prompt methods:
 
 - `confirm`: prompt the user to confirm an action. Returns `True` if the user confirms, `False` otherwise.
 - `text`: prompt the user to enter a text. Returns the text entered by the user.
+- `csv`: prompt the user to enter a CSV text. Returns a list of lists containing the CSV data.
 - `editor`: prompt the user to enter a text using an editor. Returns the text entered by the user.
 - `path`: prompt the user to enter a path. Returns a pathlib `Path` object.
 - `password`: prompt the user to enter a password. Returns the password entered by the user.

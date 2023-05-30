@@ -82,6 +82,28 @@ class Prompt:
 
         kwargs = {'message': message, **kwargs}
         return cls._convert_to_inquirer('text', **kwargs)
+    
+    @classmethod
+    def csv(cls, message: str, **kwargs) -> Optional[str]:
+        """
+        Ask the user to input a comma-separated list of values.
+        
+        :param message: The message to display.
+        :param kwargs: Keyword arguments to pass to the prompt.
+        
+        :return: The user's response.
+        """
+
+        if 'default' in kwargs and kwargs['default']:
+            kwargs['default'] = ','.join(kwargs['default'])
+
+        kwargs = {'message': message, **kwargs}
+
+        response = cls._convert_to_inquirer('text', **kwargs)
+        response = response.split(',')
+        response = [value.strip() for value in response]
+
+        return response
 
     @classmethod
     def editor(cls, message: str, **kwargs) -> Optional[str]:
@@ -112,6 +134,7 @@ class Prompt:
             kwargs['default'] = str(Path(kwargs['default']).resolve())
 
         kwargs = {'message': message, **kwargs}
+
         response = cls._convert_to_inquirer('path', **kwargs)
 
         return Path(response) if response else None
