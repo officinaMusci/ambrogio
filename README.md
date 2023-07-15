@@ -218,7 +218,12 @@ Available prompt methods:
 
 - `confirm`: prompt the user to confirm an action. Returns `True` if the user confirms, `False` otherwise.
 - `text`: prompt the user to enter a text. Returns the text entered by the user.
+- `integer`: prompt the user to enter an integer. Returns the integer entered by the user.
+- `float`: prompt the user to enter a float. Returns the float entered by the user.
+- `date`: prompt the user to enter a date. Returns a `datetime.date` object.
+- `datetime`: prompt the user to enter a datetime. Returns a `datetime.datetime` object.
 - `csv`: prompt the user to enter a CSV text. Returns a list of lists containing the CSV data.
+- `json`: prompt the user to enter a JSON text. Returns a `dict` containing the JSON data.
 - `editor`: prompt the user to enter a text using an editor. Returns the text entered by the user.
 - `path`: prompt the user to enter a path. Returns a pathlib `Path` object.
 - `password`: prompt the user to enter a password. Returns the password entered by the user.
@@ -231,6 +236,12 @@ All prompt methods can take the following arguments:
 
 - `default`: the default value to return if the user does not enter anything.
 - `validate`: a function that takes the value entered by the user as argument and returns `True` if the value is valid, `False` otherwise.
+
+The path prompt method can take the following arguments:
+
+- `path_type`: the type of path to return. Can be `file`, `directory` or `any`.
+- `exists`: if `True`, the path must exist.
+- `normalize_to_absolute_path`: if `True`, the path will be normalized to an absolute path.
 
 Available logger methods:
 
