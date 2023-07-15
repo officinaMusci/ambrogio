@@ -42,18 +42,29 @@ class ProcedureParam:
                 default = self.value
             )
 
+        elif self.type == int:
+            self.value = Prompt.integer(
+                f"Enter an integer for '{self.name}'",
+                default = self.value
+            )
+
+        elif self.type == float:
+            self.value = Prompt.float(
+                f"Enter a float for '{self.name}'",
+                default = self.value
+            )
+
         elif self.type == Path:
             self.value = Prompt.path(
                 f"Enter a path for '{self.name}'",
-                default = self.value,
-                validate = lambda _, x: self._check_conversion(x)
+                default = self.value
             )
 
         else:
             value = Prompt.text(
                 f"Enter the value for '{self.name}' ({self.type.__name__})",
                 default = self.value,
-                validate = lambda _, x: (
+                validate = lambda x: (
                     (not self.required or x != '')
                     and (
                         self._check_type(x, self.type)
