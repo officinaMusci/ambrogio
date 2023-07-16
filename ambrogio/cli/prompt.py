@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import List, Any, Optional, Union, Literal
+from typing import List, Tuple, Any, Optional, Union, Literal
 from pathlib import Path
 from time import sleep
 from datetime import datetime
@@ -380,6 +380,10 @@ class Prompt:
         :param message: The message to display.
         :param default: The default value.
         :param validate: A function to validate the user's response.
+        :param path_type: The type of path to accept.
+        :param exists: Whether the path must exist or not.
+        :param normalize_to_absolute_path: Whether to normalize the path to an
+            absolute path or not.
         :param kwargs: Keyword arguments to pass to the prompt.
         
         :return: The user's response.
@@ -432,8 +436,8 @@ class Prompt:
     def checkbox(
         cls,
         message: str,
-        choices: list,
-        default: Optional[list] = None,
+        choices: Union[List[str], List[Tuple[str, Any]]],
+        default: Optional[Union[List[str], List[Any]]] = None,
         validate: Optional[callable] = None,
         **kwargs
     ) -> List[Any]:
@@ -462,8 +466,7 @@ class Prompt:
     def list(
         cls,
         message: str,
-        choices: list,
-        default: Optional[str] = None,
+        choices: Union[List[str], List[Tuple[str, Any]]],
         validate: Optional[callable] = None,
         **kwargs
     ) -> Any:
@@ -472,6 +475,7 @@ class Prompt:
 
         :param message: The message to display.
         :param choices: The list of choices.
+        :param validate: A function to validate the user's response.
         :param kwargs: Keyword arguments to pass to the prompt.
 
         :return: The user's response.
@@ -481,7 +485,6 @@ class Prompt:
             'list',
             message = message,
             choices = choices,
-            default = default,
             validate = validate,
             **kwargs
         )
@@ -490,7 +493,7 @@ class Prompt:
     def _convert_to_inquirer(
         method: str,
         message: str,
-        choices: Optional[list] = None,
+        choices: Optional[Union[List[str], List[Tuple[str, Any]]]] = None,
         default: Optional[str] = None,
         validate: Optional[callable] = None,
         **kwargs
