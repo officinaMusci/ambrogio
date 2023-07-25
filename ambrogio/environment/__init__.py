@@ -83,7 +83,8 @@ def init_env() -> ConfigParser:
                 for option in config_base[section]:
                     if option not in config[section]:
                         logging.warning(
-                            f"Option '{option}' not found in {ini_path}."
+                            f"Option '{option}' in section '{section}'"
+                            f" not found in {ini_path}."
                             ' Using default value.'
                         )
                         config[section][option] = config_base[section][option]
