@@ -34,7 +34,8 @@ def create_project(
 
     config = ConfigParser()
     config['settings'] = {
-        'procedure_module': procedure_module_name
+        'procedure_module': procedure_module_name,
+        'log_level': 'NOTSET'
     }
 
     config_path: Path = project_path / 'ambrogio.ini'

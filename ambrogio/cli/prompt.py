@@ -5,11 +5,11 @@ from pathlib import Path
 from time import sleep
 from datetime import datetime
 import json
+import logging
 
 import inquirer
 from inquirer.themes import Theme, term
 
-from ambrogio.cli.logger import logger
 from ambrogio.utils.threading import pause_event, exit_event
 from ambrogio.utils.validators import (
     validate_date,
@@ -31,7 +31,7 @@ def ask_for_interrupt():
     if confirm:
         exit_event.set()
 
-        logger.warning('Interrupting program...')
+        logging.warning('Interrupting program...')
         
         sys.exit(0)
     

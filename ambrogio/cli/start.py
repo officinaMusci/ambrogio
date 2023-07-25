@@ -1,5 +1,9 @@
 from threading import Thread
 from time import sleep
+import logging
+
+from rich.logging import RichHandler
+from rich import traceback
 
 from ambrogio.cli.prompt import Prompt
 from ambrogio.cli.dashboard import Dashboard
@@ -35,6 +39,16 @@ def start():
     live performances monitoring.
     """
     config = init_env()
+
+    # Set up logging
+    FORMAT = "%(message)s"
+    logging.basicConfig(
+        level=config['settings']['log_level'],
+        format=FORMAT,
+        datefmt="[%X]",
+        handlers=[RichHandler(rich_tracebacks = True)]
+    )
+    traceback.install(show_locals = True)
             
     procedure_loader = ProcedureLoader(config)
     procedure_list = procedure_loader.list()
