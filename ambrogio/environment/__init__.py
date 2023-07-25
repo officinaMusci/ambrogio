@@ -75,7 +75,7 @@ def init_env() -> ConfigParser:
             for section in config_base:
                 if section not in config:
                     logging.warning(
-                        f"Section {section} not found in {ini_path}."
+                        f"Section '{section}' not found in {ini_path}."
                         ' Using default values.'
                     )
                     config[section] = {}
@@ -83,10 +83,14 @@ def init_env() -> ConfigParser:
                 for option in config_base[section]:
                     if option not in config[section]:
                         logging.warning(
-                            f"Option {option} not found in {ini_path}."
+                            f"Option '{option}' not found in {ini_path}."
                             ' Using default value.'
                         )
                         config[section][option] = config_base[section][option]
+
+            # Set the log level
+            log_level = config['settings']['log_level']
+            logging.getLogger().setLevel(log_level)
 
             # Add the project path to the Python path
             project_path = str(Path(ini_path).parent)
