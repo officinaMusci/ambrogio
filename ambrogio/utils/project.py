@@ -5,13 +5,13 @@ from configparser import ConfigParser
 import string
 
 from ambrogio import procedures
-from ambrogio.environment import get_closest_ini, NestedProjectError
+from ambrogio.environment import config_base, NestedProjectError, get_closest_ini
 
 
 def create_project(
     project_name: str,
     dest_directory_path: Union[str, os.PathLike] = '.',
-    procedure_module_name: str = 'procedures'
+    procedure_module_name: str = config_base['settings']['procedure_module']
 ):
     """
     Create an Ambrogio project.
@@ -34,8 +34,8 @@ def create_project(
 
     config = ConfigParser()
     config['settings'] = {
-        'procedure_module': procedure_module_name,
-        'log_level': 'NOTSET'
+        **config_base['settings'],
+        'procedure_module': procedure_module_name
     }
 
     config_path: Path = project_path / 'ambrogio.ini'

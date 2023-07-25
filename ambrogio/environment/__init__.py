@@ -3,6 +3,15 @@ import sys
 from typing import Union, Optional
 from pathlib import Path
 from configparser import ConfigParser
+import logging
+
+
+config_base = {
+    'settings': {
+        'procedure_module': 'procedures',
+        'log_level': 'NOTSET'
+    }
+}
 
 
 class MissingConfigFileError(FileNotFoundError):
@@ -61,8 +70,26 @@ def init_env() -> ConfigParser:
         config.read(ini_path)
 
         if config:
-            project_path = str(Path(ini_path).parent)
+            # If the config has missing sections or options, fill them with
+            # the default values
+            for section in config_base:
+                if section not in config:
+                    logging.warning(
+                        f"Section {section} not found in {ini_path}."
+                        ' Using default values.'
+                    )
+                    config[section] = {}
+                
+                for option in config_base[section]:
+                    if option not in config[section]:
+                        logging.warning(
+                            f"Option {option} not found in {ini_path}."
+                            ' Using default value.'
+                        )
+                        config[section][option] = config_base[section][option]
 
+            # Add the project path to the Python path
+            project_path = str(Path(ini_path).parent)
             if project_path not in sys.path:
                 sys.path.append(project_path)
 
